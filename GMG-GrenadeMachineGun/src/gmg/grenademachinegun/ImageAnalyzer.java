@@ -10,6 +10,8 @@ package gmg.grenademachinegun;
  * @author Matias
  */
 public class ImageAnalyzer implements Runnable {
+CameraReader camRead;
+
 
     @Override
     public void run() {
