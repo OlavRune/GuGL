@@ -32,8 +32,9 @@ public class GuGl {
 
     public synchronized void put(int value) {
         while (available == true) {
+            System.out.println("put()"+value);
             try {
-                wait();
+                wait(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(GuGl.class.getName()).log(Level.SEVERE, null, ex);
             }
