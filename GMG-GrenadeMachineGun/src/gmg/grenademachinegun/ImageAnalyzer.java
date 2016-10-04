@@ -5,6 +5,10 @@
  */
 package gmg.grenademachinegun;
 
+
+import java.lang.Math;
+import static java.lang.Math.pow;
+
 /**
  *
  * @author Matias
@@ -42,6 +46,14 @@ public class ImageAnalyzer implements Runnable {
             gugl.put(-1); // stop sign for the consumer
         }
         System.out.println("Camera # 1 stopped...");
+    }
+    
+    public double calculateTrajectory(){
+    double theta = 30; //% angle
+    double vi = 10;    //% meter/second
+    double g = 9.81;   //% gravity
+    double range = (pow(vi,2)*Math.sin(2*theta))/(g);
+        return range; //http://formulas.tutorvista.com/physics/trajectory-formula.html
     }
 
 }
