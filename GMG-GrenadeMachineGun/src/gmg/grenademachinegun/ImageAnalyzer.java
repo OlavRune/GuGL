@@ -11,9 +11,9 @@ package gmg.grenademachinegun;
  */
 public class ImageAnalyzer implements Runnable {
 
-    private     CameraReader camRead;
-    private     GuGl         gugl;
-    private     Thread       camera;
+    private CameraReader camRead;
+    private GuGl gugl;
+    private Thread camera;
 
     public ImageAnalyzer(GuGl ggl) {
         gugl = ggl;
@@ -24,13 +24,25 @@ public class ImageAnalyzer implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i<10; i++){
-        gugl.put(i);
-            System.out.println("Camera#1 ( "+this.camera.getName()+ ")"+"("+"put"+i+")");
-        
-        
+        System.out.println("ImageAnalyzer RUN()");
+int start = 0;
+int max = 25;
+        for (int i = start; i < max; i++) {
+            gugl.put(i);
+            System.out.println("Camera#1 ( " + this.camera.getName() + ")" + "(" + "put" + gugl.get() + ")");
+
+            try {
+                //sleep((int)(Math.random() * 100)); // random sleep-time (integer)
+                Thread.sleep(1000);  // suspend this thread for a number of millis
+            }
+      catch (InterruptedException e) {
+          System.out.println(e.toString());
+      }
+    }
+        if (camera.getName().equalsIgnoreCase("Thread-1")) {  // compare
+            gugl.put(-1); // stop sign for the consumer
         }
-        
+        System.out.println("Camera # 1 stopped...");
     }
 
 }

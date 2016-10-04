@@ -18,7 +18,7 @@ public class GMGGrenadeMachineGun {
         // TODO code application logic here
         GuGl gugl = new GuGl();
         
-        KeyController keys = new KeyController();
+       // KeyController keys = new KeyController();
         ImageAnalyzer img = new ImageAnalyzer(gugl);
         ThunderLauncher thlu = new ThunderLauncher(gugl);
     }

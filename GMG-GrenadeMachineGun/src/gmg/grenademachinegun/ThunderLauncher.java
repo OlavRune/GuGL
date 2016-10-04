@@ -23,13 +23,20 @@ public class ThunderLauncher implements Runnable {
 
     @Override
     public void run() {
-        
-      for (int i = 0; i<255; i++){
-        gugl.put(i);
-            System.out.println("MissileLauncher#1 ( "+this.turret.getName()+ ")"+"("+"put"+i+")");
-        
-        
-        }  
-    }
+        System.out.println("MissileLauncher RUN()");
+        for (int x = 0; x < 255; x++) {
+            gugl.put(x);
+            System.out.println("MissileLauncher#1 ( " + this.turret.getName() + ")(" + "put" + gugl.get() + ")");
 
+            try {
+                //sleep((int)(Math.random() * 100)); // random sleep-time (integer)
+                Thread.sleep(100);  // suspend this thread for a number of millis
+            } catch (InterruptedException e) {
+            }
+        }
+        if (turret.getName().equalsIgnoreCase("Thread-1")) {  // compare
+            gugl.put(-1); // stop sign for the consumer
+        }
+        System.out.println("MissileLauncher # 1 stopped...");
+    }
 }
