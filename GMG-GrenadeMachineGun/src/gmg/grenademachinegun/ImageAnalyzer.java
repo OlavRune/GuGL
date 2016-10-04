@@ -10,7 +10,7 @@ import java.lang.Math;
 import static java.lang.Math.pow;
 
 /**
- *
+ * CLASS ImageAnalyzer
  * @author Matias
  */
 public class ImageAnalyzer implements Runnable {
@@ -18,7 +18,11 @@ public class ImageAnalyzer implements Runnable {
     private CameraReader camRead;
     private GuGl gugl;
     private Thread camera;
-
+    
+/**
+ * Constructor of the class ImageAnalyzer
+ * @param ggl 
+ */
     public ImageAnalyzer(GuGl ggl) {
         gugl = ggl;
         camera = new Thread(this); // creates a thread
@@ -48,12 +52,26 @@ public class ImageAnalyzer implements Runnable {
         System.out.println("Camera # 1 stopped...");
     }
     
-    public double calculateTrajectory(){
-    double theta = 30; //% angle
-    double vi = 10;    //% meter/second
-    double g = 9.81;   //% gravity
-    double range = (pow(vi,2)*Math.sin(2*theta))/(g);
-        return range; //http://formulas.tutorvista.com/physics/trajectory-formula.html
+    
+    /** 
+     * // NEED TO ADD RANGE PARAMETER
+     * @return Theta @Angle the turret will have to point to hit target
+     */
+    public double calculateTrajectory(){ //range must be a parameter in this method
+    double range = 3; //% range to target(MUST COME FROM REALTIME DATA NOT A STATIC)
+    double vi = 10;    //% meter/second  (MUST BE MEASURED TO GET A BETTER ESTIMATE)
+    double g = 9.81;   //% gravity       (APROX 9.81 m/s^2)
+    //double range = (pow(vi,2)*Math.sin(2*theta))/(g); // Formel for avstand basert på vinkel
+    double theta = Math.asin((range*g)/(Math.pow(vi,2)))/2;
+        return theta; //http://formulas.tutorvista.com/physics/trajectory-formula.html
     }
+    
+//    /**
+//     *
+//     * @return
+//     */
+//    public double getRange(){
+//    return;
+//    }
 
 }
