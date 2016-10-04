@@ -20,6 +20,7 @@ public class GMGGrenadeMachineGun {
         
         KeyController keys = new KeyController();
         ImageAnalyzer img = new ImageAnalyzer(gugl);
+        ThunderLauncher thlu = new ThunderLauncher(gugl);
     }
     
 }

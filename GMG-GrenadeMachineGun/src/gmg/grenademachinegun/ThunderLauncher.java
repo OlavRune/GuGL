@@ -9,11 +9,27 @@ package gmg.grenademachinegun;
  *
  * @author Matias
  */
-public class ThunderLauncher implements Runnable{
+public class ThunderLauncher implements Runnable {
+
+    private Launcher launcher;
+    private GuGl gugl;
+    private Thread turret;
+
+    public ThunderLauncher(GuGl ggl) {
+        gugl = ggl;
+        turret = new Thread(this); // creates a thread
+        turret.start();
+    }
 
     @Override
     public void run() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+      for (int i = 0; i<255; i++){
+        gugl.put(i);
+            System.out.println("MissileLauncher#1 ( "+this.turret.getName()+ ")"+"("+"put"+i+")");
+        
+        
+        }  
     }
-    
+
 }
