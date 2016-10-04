@@ -16,8 +16,10 @@ public class GMGGrenadeMachineGun {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        GuGl gugl = new GuGl();
+        
         KeyController keys = new KeyController();
-        ImageAnalyzer img = new ImageAnalyzer();
+        ImageAnalyzer img = new ImageAnalyzer(gugl);
     }
     
 }
