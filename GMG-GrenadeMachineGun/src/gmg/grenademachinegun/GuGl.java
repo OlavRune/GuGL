@@ -32,7 +32,7 @@ public class GuGl {
 
     public synchronized void put(int value) {
         while (available == true) {
-            System.out.println("put()"+value);
+            System.out.println("put()" + value);
             try {
                 wait(1000);
             } catch (InterruptedException ex) {

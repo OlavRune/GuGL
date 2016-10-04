@@ -23,7 +23,11 @@ public class ThunderLauncher implements Runnable {
 
     @Override
     public void run() {
+
         System.out.println("MissileLauncher RUN()");
+        int start = 0;
+        int max = 255;
+
         for (int x = 0; x < 255; x++) {
             gugl.put(x);
             System.out.println("MissileLauncher#1 ( " + this.turret.getName() + ")(" + "put" + gugl.get() + ")");
