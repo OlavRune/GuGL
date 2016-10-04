@@ -10,12 +10,27 @@ package gmg.grenademachinegun;
  * @author Matias
  */
 public class ImageAnalyzer implements Runnable {
-CameraReader camRead;
 
+    private     CameraReader camRead;
+    private     GuGl         gugl;
+    private     Thread       camera;
+
+    public ImageAnalyzer(GuGl ggl) {
+        gugl = ggl;
+        camera = new Thread(this); // creates a thread
+        camera.start();
+
+    }
 
     @Override
     public void run() {
+        for (int i = 0; i<10; i++){
+        gugl.put(i);
+            System.out.println("Camera#1 ( "+this.camera.getName()+ ")"+"("+"put"+i+")");
+        
+        
+        }
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }
