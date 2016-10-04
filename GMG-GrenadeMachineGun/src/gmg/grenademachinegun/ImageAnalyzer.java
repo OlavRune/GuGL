@@ -7,7 +7,7 @@ package gmg.grenademachinegun;
 
 
 import java.lang.Math;
-import static java.lang.Math.pow;
+
 
 /**
  * CLASS ImageAnalyzer
