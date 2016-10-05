@@ -5,6 +5,7 @@
  */
 package gmg.grenademachinegun;
 
+
 /**
  *
  * @author Olav Rune
@@ -16,12 +17,14 @@ public class GMGGrenadeMachineGun {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        GuGl gugl = new GuGl();
+     ColorTrack c = new ColorTrack();
+       /* GuGl gugl = new GuGl();
 
         // KeyController keys = new KeyController();
         ImageAnalyzer img = new ImageAnalyzer(gugl);
         ThunderLauncher thlu = new ThunderLauncher(gugl);
-        ColorTrack c = new ColorTrack();
+*/
+        
     }
 
 }
