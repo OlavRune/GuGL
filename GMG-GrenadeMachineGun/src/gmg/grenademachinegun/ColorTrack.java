@@ -110,9 +110,9 @@ public class ColorTrack {
                 double[] hsv_values = new double[3];
                 
                 capture = new VideoCapture(0); 
-                capture.set(3, 1366);
-		capture.set(4, 768);
-		capture.set(15, -2);
+                //capture.set(3, 1366);
+		//capture.set(4, 768);
+		//capture.set(15, -2);
 		
 	
                  capture.read(webcam_image);  
