@@ -15,9 +15,15 @@ public class GMGGrenadeMachineGun {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         // TODO code application logic here
      ColorTrack c = new ColorTrack();
+    // SerialTest s = new SerialTest();
+     
+     
+     
+    //SerialInterface s = new SerialInterface();
+    //s.start();
        /* GuGl gugl = new GuGl();
 
         // KeyController keys = new KeyController();
