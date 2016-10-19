@@ -6,6 +6,7 @@
 package gmg.grenademachinegun;
 
 import java.util.concurrent.Semaphore;
+import javax.swing.JFrame;
 
 
 /**
@@ -13,6 +14,8 @@ import java.util.concurrent.Semaphore;
  * @author Olav Rune
  */
 public class GMGGrenadeMachineGun {
+
+    private static JFrame guiFrame;
 
     /**
      * @param args the command line arguments
@@ -33,14 +36,23 @@ public class GMGGrenadeMachineGun {
 
     StorageBox storageBox = new StorageBox();
     
+    ColorTrackSemaphores color = new ColorTrackSemaphores(storageBox, semaphore);
+    GUIcorrected gui = new GUIcorrected();
+    gui.importclass(color);
+    
+    //GUI g = new GUI();
+      guiFrame = new JFrame("GUI");
+        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        guiFrame.setSize(640, 480);
+    
+        guiFrame.setContentPane(gui);
+        guiFrame.setVisible(true);
+    
+    
+   
+    color.start();
     //Producer producer[] = new Producer[numberOfProducers];
 
-    for (int i = 0; i < numberOfProducers; i++)
-    {
-      //producer[i] = new Producer(storageBox, i+1, semaphore);
-      // Start producer threads
-     // producer[i].start();
-    }
     
     Consumer c1 = new Consumer(storageBox, 1, semaphore, numberOfProducers);
 
