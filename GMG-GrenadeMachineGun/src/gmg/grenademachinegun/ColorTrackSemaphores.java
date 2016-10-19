@@ -72,7 +72,7 @@ public class ColorTrackSemaphores extends Thread{
 
     public ColorTrackSemaphores(StorageBox storeageBox, Semaphore semaphore){
         
-        this.storageBox = storeageBox;
+        this.storageBox = storeageBox; 
  
         this.semaphore = semaphore;
         this.available = true;
@@ -95,33 +95,55 @@ public class ColorTrackSemaphores extends Thread{
     public void run(){
         
         int start = 1;
+        long startTime = 0;
+        long endTime = 0;
+        long startTotTime = 0;
+        long endTotTime = 0;
     
     counter = start;
         
         while (counter < 10000) {
+            startTotTime = System.currentTimeMillis();
+            
               try {
         semaphore.acquire();
+                //startTime = System.currentTimeMillis();
       }
       catch(InterruptedException e) {
       }
-      //available = storageBox.getAvailable();
-      available = false;
+      available = storageBox.getAvailable();
+      //available = false;
       if (!available) {
          
         storageBox.put(counter);
-       
+        
+        startTime = System.currentTimeMillis();
+        
         trackColors();
+        
+        endTime = System.currentTimeMillis();
+      long time = endTime-startTime;
+       System.out.println("Time in TrackColors loop: " + time + "ms");
     
       }
       semaphore.release();
+      
+      endTime = System.currentTimeMillis();
+      //long time = endTime-startTime;
+            //System.out.println("Time elapsed from producer acquired to release " + time + "ms");
+     
+    
+      
       // normally non-critical operations will be outside semaphore:
       if (!available) {
           
-        System.out.println("Producer #" + "this.getName()" + ") " +
-                            " put: " + counter);
-        //counter++;
+        System.out.println( "Producer put: " + counter);
+        counter++;
           
       }
+      endTotTime = System.currentTimeMillis();
+      long totTime = endTotTime-startTotTime;
+            System.out.println("Total time in producer-loop: " +totTime+"ms");
         }
         
         
@@ -163,11 +185,13 @@ public class ColorTrackSemaphores extends Thread{
                 capture = new VideoCapture(0); 
                 //capture.set(3,1920);
                // capture.set(4,1080);
-                capture.set(5,10);
+                //capture.set(5,40);
                // capture.se(CV_CAP_PROP_,3);
                // capture.set(15, -2);
-                capture.set(3, 1366);
-		capture.set(4, 768);
+               capture.set(3, 400);
+		capture.set(4, 500);
+                //capture.set(3, 1366);
+		//capture.set(4, 768);
 		//capture.set(15, -2);
                 
 		
@@ -372,10 +396,13 @@ public class ColorTrackSemaphores extends Thread{
                                                  Core.line(webcam_image, new Point(x,y), new Point(centerX,centerY), new Scalar(150,150,100)/*CV_BGR(100,10,10)*/, 3);  
                                                  
                                                    
-                                                 System.out.println("angleErrorX: "+angleErrorX);
-                                                 System.out.println("angleErrorY: "+angleErrorY);
-                                                    System.out.println(counter);
-                                                    counter++;
+                                                // System.out.println("angleErrorX: "+angleErrorX);
+                                                // System.out.println("angleErrorY: "+angleErrorY);
+                                                  //  System.out.println(counter);
+                                                  
+                                                  storageBox.putError(angleErrorX, angleErrorY);
+                                                  
+                                                
                                                  
                                                 }
                                                  
