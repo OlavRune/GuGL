@@ -36,17 +36,17 @@ public class GMGGrenadeMachineGun {
 
     StorageBox storageBox = new StorageBox();
     
-    ColorTrackSemaphores color = new ColorTrackSemaphores(storageBox, semaphore);
+    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBox, semaphore);
     GUIcorrected gui = new GUIcorrected();
     gui.importclass(color);
     
     //GUI g = new GUI();
-      guiFrame = new JFrame("GUI");
-        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        guiFrame.setSize(640, 480);
+    //  guiFrame = new JFrame("GUI");
+      //  guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+       // guiFrame.setSize(640, 480);
     
-        guiFrame.setContentPane(gui);
-        guiFrame.setVisible(true);
+   //     guiFrame.setContentPane(gui);
+     //   guiFrame.setVisible(true);
     
     
    

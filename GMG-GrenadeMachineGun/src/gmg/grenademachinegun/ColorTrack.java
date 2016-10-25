@@ -21,6 +21,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.highgui.Highgui;
 import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 
@@ -55,6 +56,8 @@ public class ColorTrack {
     private Mat array255;
     private Mat distance;
     List<MatOfPoint> contours;
+    
+           boolean b = true;
  
     
     
@@ -110,9 +113,15 @@ public class ColorTrack {
                 double[] hsv_values = new double[3];
                 
                 capture = new VideoCapture(0); 
+                capture.set(3,1920);
+                capture.set(4,1080);
+                capture.set(5,10);
+               // capture.se(CV_CAP_PROP_,3);
+               // capture.set(15, -2);
                 //capture.set(3, 1366);
 		//capture.set(4, 768);
 		//capture.set(15, -2);
+                
 		
 	
                  capture.read(webcam_image);  
@@ -222,7 +231,10 @@ public class ColorTrack {
 							,1.0,new Scalar(100),3);  
                                                 
                                                 cameraPanel.setimagewithMat(webcam_image);  
-					hsvPanel.setimagewithMat(hsv_image);  
+					
+                                                //hsvPanel.setimagewithMat(hsv_image);  
+                                                
+                                                
 					//panel2.setimagewithMat(S);  
 					//distance.convertTo(distance, CvType.CV_8UC1);  
 					//panel3.setimagewithMat(distance);  
@@ -257,6 +269,8 @@ public class ColorTrack {
         lhsv = new ArrayList<Mat>(3);  
         
         array255 = new Mat(webcam_image.height(),webcam_image.width(),CvType.CV_8UC1);  
+    
+        
 	array255.setTo(new Scalar(255));  
         
         distance = new Mat(webcam_image.height(),webcam_image.width(),CvType.CV_8UC1);
@@ -313,7 +327,6 @@ public class ColorTrack {
                                                  Core.line(webcam_image, new Point(x,y), new Point(centerX,centerY), new Scalar(150,150,100)/*CV_BGR(100,10,10)*/, 3);  
                                                  
                                                    
-                                                  
                                                  System.out.println("angleErrorX: "+angleErrorX);
                                                  System.out.println("angleErrorY: "+angleErrorY);
                                                  
@@ -325,6 +338,7 @@ public class ColorTrack {
                                                 
                                                 
     }
+
 }
 
   
