@@ -9,37 +9,44 @@ package gmg.grenademachinegun;
  * @author ib
  */
 public class StorageBoxSettings {
-  private int contents;               // value to be stored
-  private boolean available = false;  // flag
-  
-  private float xError;
-  private float yError;
- 
 
-  public boolean getAvailable() {
-    return available;
-  }
-  
-  public synchronized int get() {
-    if (available == true) {
-      // value not available, wait for producer
-      available = false;
-    }
-    return contents;
-  }
+    private int contents;               // value to be stored
+    private boolean available = false;  // flag
 
-  // reading value and resetting flag, wake up other threads (producer)
-  public void put(int value) {
-    if (available == false) {
-      contents = value; // store value
-      available = true; // now available for consumer
+    private double[] hsvSettings;
+
+    public boolean getAvailable() {
+        return available;
     }
-  }
-  
-    public void putError(float x, float y){
-      
-      xError = x;
-      yError = y;
-      
-  }
+
+    public synchronized int get() {
+        if (available == true) {
+            // value not available, wait for producer
+            available = false;
+        }
+        return contents;
+    }
+
+    // reading value and resetting flag, wake up other threads (producer)
+    public void put(int value) {
+        if (available == false) {
+            contents = value; // store value
+            available = true; // now available for consumer
+        }
+    }
+
+    public void putHsvSettings(double[] settings) {
+       if(available == false){
+            this.hsvSettings = settings;
+            available = false;
+       }
+     
+    }
+    
+    public synchronized double[] getHsvSettings(){
+        if(available == true){
+            available = false;
+        }
+        return hsvSettings;
+    }
 }

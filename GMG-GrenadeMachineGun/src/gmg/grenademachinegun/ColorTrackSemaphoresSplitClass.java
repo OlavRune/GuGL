@@ -100,10 +100,10 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     public void run() {
 
         int start = 1;
-        long startTime = 0;
-        long endTime = 0;
-        long startTotTime = 0;
-        long endTotTime = 0;
+        long startTime;
+        long endTime;
+        long startTotTime;
+        long endTotTime;
 
         counter = start;
 
@@ -115,10 +115,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
                 //startTime = System.currentTimeMillis();
             } catch (InterruptedException e) {
             }
-            //available = storageBoxCoordinates.getAvailable();
-            available = false;
-            if (!available) {
-
+          
                 storageBoxCoordinates.put(counter);
 
                 startTime = System.currentTimeMillis();
@@ -129,7 +126,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
                 long time = endTime - startTime;
                 System.out.println("Time in TrackColors loop: " + time + "ms");
 
-            }
+            
             semaphoreCoordinates.release();
 
             endTime = System.currentTimeMillis();
@@ -137,15 +134,14 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             //System.out.println("Time elapsed from producer acquired to release " + time + "ms");
 
             // normally non-critical operations will be outside semaphore:
-            if (!available) {
-
+        
                 System.out.println("Producer put: " + counter);
                 counter++;
 
-            }
+            
             endTotTime = System.currentTimeMillis();
             long totTime = endTotTime - startTotTime;
-            System.out.println("Total time in producer-loop: " + totTime + "ms");
+            //System.out.println("Total time in producer-loop: " + totTime + "ms");
         }
 
     }
@@ -301,10 +297,6 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     }
 
-    private void showImages() {
-
-        //so,ething
-    }
 
     private void createMat() {
         webcam_image = new Mat();
@@ -330,12 +322,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     private void getTargetError() {
 
-        int x = getX(contours);
-        int y = getY(contours);
+        int x = getXError(contours);
+        int y = getYError(contours);
         contours.clear();
 
         if (x > 0) {
-            mouse.moveMouse(x, y);
+           
 
             Core.circle(webcam_image, new Point(x, y), 4, new Scalar(50, 49, 0, 255), 4);
             //float centerX = cameraPanel.getWidth()/2;
@@ -366,7 +358,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     }
 
-    public int getX(List<MatOfPoint> contours) {
+    public int getXError(List<MatOfPoint> contours) {
         List<Moments> mu = new ArrayList<Moments>(contours.size());
         int x = 0;
         for (int i = 0; i < contours.size(); i++) {
@@ -377,7 +369,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         return x;
     }
 
-    public int getY(List<MatOfPoint> contours) {
+    public int getYError(List<MatOfPoint> contours) {
         List<Moments> mu = new ArrayList<Moments>(contours.size());
         int y = 0;
         for (int i = 0; i < contours.size(); i++) {

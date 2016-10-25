@@ -30,16 +30,32 @@ public class StorageBoxCoordinates {
 
   // reading value and resetting flag, wake up other threads (producer)
   public void put(int value) {
-    if (available == false) {
+      
       contents = value; // store value
       available = true; // now available for consumer
-    }
   }
+  
+  
   
     public void putError(float x, float y){
       
       xError = x;
       yError = y;
       
+      available = true;
+      
   }
+    
+    /**
+     * 
+     * @return getError as a double containing xError, Yerror
+     */
+    public synchronized double[] getError(){
+        
+        if(available == true){
+            available = false;                  
+        }
+        double[] e = new double[]{xError,yError};
+        return e;
+    }
 }

@@ -32,7 +32,7 @@ public class GMGGrenadeMachineGun {
     boolean fairness = true;  // used in the Java's Semaphore
 
     System.out.println("Busy waiting...");
-
+ 
     Semaphore semaphoreCoordinates = new Semaphore(numberOfPermits, fairness);
     Semaphore semaphoreSettings = new Semaphore(numberOfPermits,fairness);
     Semaphore semaphoreVideoStream = new Semaphore(numberOfPermits, fairness);
@@ -41,28 +41,20 @@ public class GMGGrenadeMachineGun {
     StorageBoxSettings storageBoxSettings = new StorageBoxSettings();
     StorageBoxVideoStream storageBoxVideoStream = new StorageBoxVideoStream();
     
+  
+    
+    
     ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
-    GUIcorrected gui = new GUIcorrected();
-     gui.importclass(color);
     
-    //GUI g = new GUI();
-    //  guiFrame = new JFrame("GUI");
-      //  guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       // guiFrame.setSize(640, 480);
-    
-   //     guiFrame.setContentPane(gui);
-     //   guiFrame.setVisible(true);
-    
-    
-   
-    color.start();
-    //Producer producer[] = new Producer[numberOfProducers];
 
+    ArduinoSerial ArduinoSerial = new ArduinoSerial(storageBoxCoordinates, 1, semaphoreCoordinates);
     
-    Consumer ArduinoSerial = new Consumer(storageBoxCoordinates, 1, semaphoreCoordinates, numberOfProducers);
+    UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers);
+    recive.start();
 
     // Start consumer threads
-    ArduinoSerial.start();
+    //color.start();
+    //ArduinoSerial.start();
      
      
      

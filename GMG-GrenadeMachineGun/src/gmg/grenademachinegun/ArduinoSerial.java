@@ -10,31 +10,32 @@ import java.util.concurrent.Semaphore;
  *
  * @author ib
  */
-public class Consumer extends Thread {
+public class ArduinoSerial extends Thread {
   private StorageBoxCoordinates  storageBox;
   private Semaphore   semaphore;
   private int         consumerID;
-  private int         numberOfProducerThreads;
+
   private boolean     stop;
   private boolean     available;
   private long        sleepTime;
+  
+  private double[] error;
 
-  public Consumer(StorageBoxCoordinates storageBox, int consumerID, Semaphore semaphore,
-                  int numberOfProducers) {
+  public ArduinoSerial(StorageBoxCoordinates storageBox, int consumerID, Semaphore semaphore) {
     this.storageBox = storageBox;
     this.semaphore = semaphore;
     this.consumerID = consumerID;
     this.sleepTime = 1;
     stop = false;
-    this.numberOfProducerThreads = numberOfProducers;
+   
   }
   
   public void run() {
-    int value = 0;
-    int activeThreads = Thread.activeCount();  // init active thread counter
+ 
     
           long startTime = 0;
         long endTime = 0;
+        int counter = 0;
         
         
     while (!stop) {
@@ -48,23 +49,24 @@ public class Consumer extends Thread {
       }
       available = storageBox.getAvailable();
       if (available) {
-        value = storageBox.get();
+        error = storageBox.getError();
+        counter = storageBox.get();
+        
       }
       semaphore.release();
       endTime = System.currentTimeMillis();
        long time = (endTime-startTime);
-            System.out.println("Time elapsed from consumer acquired to release " + time + "ms");
+           // System.out.println("Time elapsed from consumer acquired to release " + time + "ms");
       // normally non-critical operations will be ouside semaphore:
       if (available) {
-        System.out.println("Consumer got: " + value);
+        System.out.println("ErrorX: " + error[0] + " ErrorY: " + error[1]);
+          System.out.println("Consumer got: " + counter);
+        
+          
       }
-      // check if all producers have terminated
-      if (Thread.activeCount() == activeThreads - numberOfProducerThreads)
-      {
-        stop = true;
-      }
+   
       try {
-        Thread.sleep(sleepTime);  // Consumer will slow down execution
+        Thread.sleep(sleepTime);  // ArduinoSerial will slow down execution
       }
       catch (InterruptedException e) {
       }
