@@ -62,7 +62,7 @@ public class ColorTrackSemaphores extends Thread {
 
     boolean b = true;
 
-    private StorageBox storageBox;
+    private StorageBoxCoordinates storageBox;
     private Semaphore semaphore;
     private boolean available;
     private boolean enabled = false;  //flag for automatic mode
@@ -70,7 +70,7 @@ public class ColorTrackSemaphores extends Thread {
 
     int counter = 0;
 
-    public ColorTrackSemaphores(StorageBox storeageBox, Semaphore semaphore) {
+    public ColorTrackSemaphores(StorageBoxCoordinates storeageBox, Semaphore semaphore) {
 
         this.storageBox = storeageBox;
 

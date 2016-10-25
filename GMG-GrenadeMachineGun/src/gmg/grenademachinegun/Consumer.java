@@ -11,7 +11,7 @@ import java.util.concurrent.Semaphore;
  * @author ib
  */
 public class Consumer extends Thread {
-  private StorageBox  storageBox;
+  private StorageBoxCoordinates  storageBox;
   private Semaphore   semaphore;
   private int         consumerID;
   private int         numberOfProducerThreads;
@@ -19,7 +19,7 @@ public class Consumer extends Thread {
   private boolean     available;
   private long        sleepTime;
 
-  public Consumer(StorageBox storageBox, int consumerID, Semaphore semaphore,
+  public Consumer(StorageBoxCoordinates storageBox, int consumerID, Semaphore semaphore,
                   int numberOfProducers) {
     this.storageBox = storageBox;
     this.semaphore = semaphore;

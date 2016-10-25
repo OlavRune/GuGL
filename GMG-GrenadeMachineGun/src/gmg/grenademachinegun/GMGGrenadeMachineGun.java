@@ -36,8 +36,8 @@ public class GMGGrenadeMachineGun {
     Semaphore semaphore = new Semaphore(numberOfPermits, fairness);
     Semaphore GUIsemaphore = new Semaphore(numberOfPermits,fairness);
 
-    StorageBox storageBox = new StorageBox();
-    StorageBoxGUI storageBoxGUI = new StorageBoxGUI();
+    StorageBoxCoordinates storageBox = new StorageBoxCoordinates();
+    StorageBoxSettings storageBoxGUI = new StorageBoxSettings();
     
     ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBox, storageBoxGUI, GUIsemaphore, semaphore);
     GUIcorrected gui = new GUIcorrected();

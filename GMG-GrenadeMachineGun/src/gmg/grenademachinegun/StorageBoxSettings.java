@@ -8,7 +8,7 @@ package gmg.grenademachinegun;
  *
  * @author ib
  */
-public class StorageBox {
+public class StorageBoxSettings {
   private int contents;               // value to be stored
   private boolean available = false;  // flag
   

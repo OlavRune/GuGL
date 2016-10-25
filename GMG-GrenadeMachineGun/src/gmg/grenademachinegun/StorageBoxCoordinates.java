@@ -8,7 +8,7 @@ package gmg.grenademachinegun;
  *
  * @author ib
  */
-public class StorageBoxGUI {
+public class StorageBoxCoordinates {
   private int contents;               // value to be stored
   private boolean available = false;  // flag
   

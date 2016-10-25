@@ -60,8 +60,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread{
     
            boolean b = true;
            
-  private StorageBox  storageBox;
-  private StorageBoxGUI storageBoxGUI;
+  private StorageBoxCoordinates  storageBox;
+  private StorageBoxSettings storageBoxGUI;
   private Semaphore semaphore;
   private Semaphore GUIsemaphore;
    private boolean available;
@@ -72,7 +72,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread{
     
     
 
-    public ColorTrackSemaphoresSplitClass(StorageBox storeageBox, StorageBoxGUI storeageBoxGUI,Semaphore GUIsemaphore, Semaphore semaphore){
+    public ColorTrackSemaphoresSplitClass(StorageBoxCoordinates storeageBox, StorageBoxSettings storeageBoxGUI,Semaphore GUIsemaphore, Semaphore semaphore){
         
         this.storageBox = storeageBox; 
         this.storageBoxGUI = storeageBoxGUI;
