@@ -33,13 +33,15 @@ public class GMGGrenadeMachineGun {
 
     System.out.println("Busy waiting...");
 
-    Semaphore semaphore = new Semaphore(numberOfPermits, fairness);
-    Semaphore GUIsemaphore = new Semaphore(numberOfPermits,fairness);
+    Semaphore semaphoreCoordinates = new Semaphore(numberOfPermits, fairness);
+    Semaphore semaphoreSettings = new Semaphore(numberOfPermits,fairness);
+    Semaphore semaphoreVideoStream = new Semaphore(numberOfPermits, fairness);
 
-    StorageBoxCoordinates storageBox = new StorageBoxCoordinates();
-    StorageBoxSettings storageBoxGUI = new StorageBoxSettings();
+    StorageBoxCoordinates storageBoxCoordinates = new StorageBoxCoordinates();
+    StorageBoxSettings storageBoxSettings = new StorageBoxSettings();
+    StorageBoxVideoStream storageBoxVideoStream = new StorageBoxVideoStream();
     
-    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBox, storageBoxGUI, GUIsemaphore, semaphore);
+    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
     GUIcorrected gui = new GUIcorrected();
      gui.importclass(color);
     
@@ -57,10 +59,10 @@ public class GMGGrenadeMachineGun {
     //Producer producer[] = new Producer[numberOfProducers];
 
     
-    Consumer c1 = new Consumer(storageBox, 1, semaphore, numberOfProducers);
+    Consumer ArduinoSerial = new Consumer(storageBoxCoordinates, 1, semaphoreCoordinates, numberOfProducers);
 
     // Start consumer threads
-    c1.start();
+    ArduinoSerial.start();
      
      
      
