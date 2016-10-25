@@ -19,6 +19,7 @@ public class GMGGrenadeMachineGun {
 
     /**
      * @param args the command line arguments
+     * @throws java.lang.Exception
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
@@ -33,12 +34,14 @@ public class GMGGrenadeMachineGun {
     System.out.println("Busy waiting...");
 
     Semaphore semaphore = new Semaphore(numberOfPermits, fairness);
+    Semaphore GUIsemaphore = new Semaphore(numberOfPermits,fairness);
 
     StorageBox storageBox = new StorageBox();
+    StorageBoxGUI storageBoxGUI = new StorageBoxGUI();
     
-    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBox, semaphore);
+    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBox, storageBoxGUI, GUIsemaphore, semaphore);
     GUIcorrected gui = new GUIcorrected();
-    gui.importclass(color);
+     gui.importclass(color);
     
     //GUI g = new GUI();
     //  guiFrame = new JFrame("GUI");

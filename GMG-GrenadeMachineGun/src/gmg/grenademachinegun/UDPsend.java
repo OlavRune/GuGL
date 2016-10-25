@@ -10,7 +10,7 @@ import java.util.concurrent.Semaphore;
  *
  * @author ib
  */
-public class UDP extends Thread {
+public class UDPsend extends Thread {
   private StorageBox  storageBox;
   private Semaphore   semaphore;
   private int         consumerID;
@@ -19,7 +19,7 @@ public class UDP extends Thread {
   private boolean     available;
   private long        sleepTime;
 
-  public UDP(StorageBox storageBox, int consumerID, Semaphore semaphore,
+  public UDPsend(StorageBox storageBox, int consumerID, Semaphore semaphore,
                   int numberOfProducers) {
     this.storageBox = storageBox;
     this.semaphore = semaphore;
