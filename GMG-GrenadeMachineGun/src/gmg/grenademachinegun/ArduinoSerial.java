@@ -59,8 +59,8 @@ public class ArduinoSerial extends Thread {
            // System.out.println("Time elapsed from consumer acquired to release " + time + "ms");
       // normally non-critical operations will be ouside semaphore:
       if (available) {
-        System.out.println("ErrorX: " + error[0] + " ErrorY: " + error[1]);
-          System.out.println("Consumer got: " + counter);
+       // System.out.println("ErrorX: " + error[0] + " ErrorY: " + error[1]);
+         // System.out.println("Consumer got: " + counter);
         
           
       }

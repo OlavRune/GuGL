@@ -23,7 +23,7 @@ public class GMGGrenadeMachineGun {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-    // ColorTrack c = new ColorTrack();
+//    // ColorTrack c = new ColorTrack();
      
      
      // Adding Semaphores
@@ -53,8 +53,8 @@ public class GMGGrenadeMachineGun {
     recive.start();
 
     // Start consumer threads
-    //color.start();
-    //ArduinoSerial.start();
+    color.start();
+    ArduinoSerial.start();
      
      
      

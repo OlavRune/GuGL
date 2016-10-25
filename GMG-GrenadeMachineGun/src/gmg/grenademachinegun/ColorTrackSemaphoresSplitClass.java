@@ -12,6 +12,8 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -52,6 +54,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private double[] hsv_values;
     private double brightness;
     private double contrast;
+    
+    private boolean hsvFrameActive = false; //flag to activate the hsvFrame
+    private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
 
     private Scalar hsv_min;
     private Scalar hsv_max;
@@ -71,6 +76,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Semaphore semaphoreSettings;
     private Semaphore semaphoreVideoStream;
     private boolean available;
+    private boolean newSettings;    //flag to check if there are new settings in StoreageboxSettings
 
     int counter = 0;
 
@@ -87,7 +93,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         try {
             createMat();
-            createFrames();
+            createCameraFrame();
+            createHsvFrame();
+            createThresholdFrame();
             addInitialValues();
 
             //trackColors();
@@ -109,6 +117,16 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         while (counter < 10000) {
             startTotTime = System.currentTimeMillis();
+            
+            newSettings = storageBoxSettings.getAvailable();
+            
+            if(newSettings == true){
+                updateSettings();
+            }
+         
+               
+            
+            
 
             try {
                 semaphoreCoordinates.acquire();
@@ -124,7 +142,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
                 endTime = System.currentTimeMillis();
                 long time = endTime - startTime;
-                System.out.println("Time in TrackColors loop: " + time + "ms");
+                
+                //System.out.println("Time in TrackColors loop: " + time + "ms");
 
             
             semaphoreCoordinates.release();
@@ -135,7 +154,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
             // normally non-critical operations will be outside semaphore:
         
-                System.out.println("Producer put: " + counter);
+                //System.out.println("Producer put: " + counter);
                 counter++;
 
             
@@ -146,9 +165,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     }
 
-    private void createFrames() throws AWTException {
+    private void createCameraFrame() throws AWTException {
 
-       // mouse = new Mouse();
         cameraFrame = new JFrame("Camera");
         cameraFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cameraFrame.setSize(640, 480);
@@ -156,30 +174,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         cameraPanel = new Panel();
         cameraFrame.setContentPane(cameraPanel);
         cameraFrame.setVisible(true);
-        hsvFrame = new JFrame("HSV");
-        hsvFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        hsvFrame.setSize(640, 480);
-        hsvFrame.setBounds(300, 100, hsvFrame.getWidth() + 300, 100 + hsvFrame.getHeight());
-        hsvPanel = new Panel();
-        hsvFrame.setContentPane(hsvPanel);
-        hsvFrame.setVisible(true);
-        thresholdFrame = new JFrame("Threshold");
-        thresholdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        thresholdFrame.setSize(640, 480);
-        thresholdFrame.setBounds(900, 300, hsvFrame.getWidth() + 900, 300 + hsvFrame.getHeight());
-        thresholdPanel = new Panel();
-        thresholdFrame.setContentPane(thresholdPanel);
-        //  thresholdFrame.setVisible(true);  
+       
+ 
 
-        /*
-                //guiFrame = new JFrame("Slider");  
-		//guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
-		//guiFrame.setSize(640,480);  
-                //gui = new GUI();  
-		//guiFrame.setContentPane(gui);      
-		//guiFrame.setVisible(true);  
-         */
-        double[] hsv_values = new double[3];
+
+    
+       // double[] hsv_values = new double[3];
 
         capture = new VideoCapture(0);
         //capture.set(3,1920);
@@ -195,14 +195,48 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         capture.read(webcam_image);
         cameraFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
-        hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+        //hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
 
-        thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+        //thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
         array255 = new Mat(webcam_image.height(), webcam_image.width(), CvType.CV_8UC1);
         array255.setTo(new Scalar(255));
-        Mat distance = new Mat(webcam_image.height(), webcam_image.width(), CvType.CV_8UC1);
-        List<Mat> lhsv = new ArrayList<>(3);
-        Mat circles = new Mat();
+        //Mat distance = new Mat(webcam_image.height(), webcam_image.width(), CvType.CV_8UC1);
+      //  List<Mat> lhsv = new ArrayList<>(3);
+       // Mat circles = new Mat();
+    }
+    
+    private void createHsvFrame(){
+        
+        hsvFrameActive = true;
+        
+        hsvFrame = new JFrame("HSV");
+        hsvFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        hsvFrame.setSize(640, 480);
+        hsvFrame.setBounds(300, 100, hsvFrame.getWidth() + 300, 100 + hsvFrame.getHeight());
+        hsvPanel = new Panel();
+        hsvFrame.setContentPane(hsvPanel);
+         hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+        hsvFrame.setVisible(true);
+        
+        
+    }
+    
+    public void createThresholdFrame(){
+        
+        thresholdFrameActive = true;
+        
+        thresholdFrame = new JFrame("Threshold");
+        thresholdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        thresholdFrame.setSize(640, 480);
+        thresholdFrame.setBounds(900, 300, hsvFrame.getWidth() + 900, 300 + hsvFrame.getHeight());
+        thresholdPanel = new Panel();
+        thresholdFrame.setContentPane(thresholdPanel);
+        thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+        
+        thresholdFrame.setVisible(true);
+        
+        
+        
     }
 
     private void trackColors() {
@@ -261,10 +295,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
             Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             hsv_values = hsv_image.get(210, 210);
-            //int hue = (int)hsv_values[0];
-            //gui.hueVal = (int) hsv_values[0];
-            //gui.satVal = (int) hsv_values[1];
-            //gui.valVal = (int) hsv_values[2];
+ 
 
             Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
                     , 1.0, new Scalar(50, 10, 10, 255), 3);
@@ -279,7 +310,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
             cameraPanel.setimagewithMat(webcam_image);
 
-            //hsvPanel.setimagewithMat(hsv_image);  
+            hsvPanel.setimagewithMat(hsv_image);  
             //panel2.setimagewithMat(S);  
             //distance.convertTo(distance, CvType.CV_8UC1);  
             //panel3.setimagewithMat(distance);  
@@ -383,16 +414,41 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private void addInitialValues() {
 
         // Add initial values to HSV min settings
-        double[] d = new double[]{10, 50, 90};
+        double[] d = new double[]{3, 144, 115};
         hsv_min.set(d);
+      
 
         // Add initial vales to HSV max settings
-        double[] m = new double[]{20, 100, 200};
-        hsv_min.set(m);
+        double[] m = new double[]{15, 245, 178};
+        hsv_max.set(m);
 
         double brightness = 1;
         double contrast = 1;
 
+    }
+
+    private void updateSettings() {
+        
+        try {
+            semaphoreSettings.acquire();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ColorTrackSemaphoresSplitClass.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        double[] hsvValues = storageBoxSettings.getHsvSettings();
+        
+        semaphoreSettings.release();
+        
+        double[] min = new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
+        hsv_min.set(min);
+        System.out.println(hsv_min);
+        
+        double[] max = new double[]{hsvValues[3],hsvValues[4],hsvValues[5]};
+        hsv_max.set(max);
+        
+        
+        
+        
     }
 
 }

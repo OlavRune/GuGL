@@ -15,6 +15,7 @@ public class StorageBoxSettings {
 
     private double[] hsvSettings;
 
+
     public boolean getAvailable() {
         return available;
     }
@@ -35,18 +36,22 @@ public class StorageBoxSettings {
         }
     }
 
-    public void putHsvSettings(double[] settings) {
+    public void putHsvSettings(double[] hsvValues) {
        if(available == false){
-            this.hsvSettings = settings;
-            available = false;
+            this.hsvSettings = hsvValues;
+
+            available = true;
        }
      
     }
     
-    public synchronized double[] getHsvSettings(){
+    public double[] getHsvSettings(){
         if(available == true){
             available = false;
         }
         return hsvSettings;
     }
+    
+ 
+    
 }
