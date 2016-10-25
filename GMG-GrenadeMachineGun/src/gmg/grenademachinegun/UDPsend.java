@@ -5,33 +5,35 @@
 package gmg.grenademachinegun;
 
 import java.util.concurrent.Semaphore;
+import org.opencv.core.Mat;
 
 /**
  *
  * @author ib
  */
 public class UDPsend extends Thread {
-  private StorageBoxCoordinates  storageBox;
+  private StorageBoxVideoStream  storageBox;
   private Semaphore   semaphore;
   private int         consumerID;
-  private int         numberOfProducerThreads;
+ 
   private boolean     stop;
   private boolean     available;
   private long        sleepTime;
-
-  public UDPsend(StorageBoxCoordinates storageBox, int consumerID, Semaphore semaphore,
-                  int numberOfProducers) {
+  
+  private Mat image;
+  
+  public UDPsend(StorageBoxVideoStream storageBox, int consumerID, Semaphore semaphore ) {
     this.storageBox = storageBox;
     this.semaphore = semaphore;
     this.consumerID = consumerID;
-    this.sleepTime = 1;
+    this.sleepTime = 50;
     stop = false;
-    this.numberOfProducerThreads = numberOfProducers;
+ 
   }
   
   public void run() {
-    int value = 0;
-    int activeThreads = Thread.activeCount();  // init active thread counter
+ 
+ 
     
           long startTime = 0;
         long endTime = 0;
@@ -48,28 +50,34 @@ public class UDPsend extends Thread {
       }
       available = storageBox.getAvailable();
       if (available) {
-        value = storageBox.get();
+        image = storageBox.get();
       }
       semaphore.release();
+      
+      SendImageOverUDP();
+      
       endTime = System.currentTimeMillis();
        long time = (endTime-startTime);
-            System.out.println("Time elapsed from consumer acquired to release " + time + "ms");
+          //  System.out.println("Time elapsed from consumer acquired to release " + time + "ms");
       // normally non-critical operations will be ouside semaphore:
-      if (available) {
-        System.out.println("Consumer got: " + value);
-      }
+      
+      
+  
       // check if all producers have terminated
-      if (Thread.activeCount() == activeThreads - numberOfProducerThreads)
-      {
-        stop = true;
-      }
+    
       try {
         Thread.sleep(sleepTime);  // Consumer will slow down execution
       }
       catch (InterruptedException e) {
       }
     }
+    
     System.out.println("Consumer #" + this.consumerID + " stopped...");
   }
+
+    private void SendImageOverUDP() {
+     
+        // Code to come
+    }
  
 }

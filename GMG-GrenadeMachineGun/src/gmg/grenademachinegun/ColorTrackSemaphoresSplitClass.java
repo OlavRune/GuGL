@@ -36,13 +36,12 @@ import org.opencv.imgproc.Moments;
 public class ColorTrackSemaphoresSplitClass extends Thread {
 
     private VideoCapture capture;
-    private GUI gui;
-    private Mouse mouse;
+
     private Mat webcam_image;
     private JFrame cameraFrame;
     private JFrame hsvFrame;
     private JFrame thresholdFrame;
-    private JFrame guiFrame;
+
     private Panel cameraPanel;
     private Panel hsvPanel;
     private Panel thresholdPanel;
@@ -54,7 +53,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private double[] hsv_values;
     private double brightness;
     private double contrast;
-    
+
+    private boolean cameraFramActive = true; //Flag to activate cameraframe
     private boolean hsvFrameActive = false; //flag to activate the hsvFrame
     private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
 
@@ -75,7 +75,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Semaphore semaphoreCoordinates;
     private Semaphore semaphoreSettings;
     private Semaphore semaphoreVideoStream;
-    private boolean available;
+    private boolean VideoStreamBoxAvailable;    //Flag to check if the Storagebox for videostream is available
     private boolean newSettings;    //flag to check if there are new settings in StoreageboxSettings
 
     int counter = 0;
@@ -88,7 +88,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         this.semaphoreCoordinates = semaphoreCoordinates;
         this.semaphoreSettings = semaphoreSettings;
         this.semaphoreVideoStream = semaphoreVideoStream;
-        this.available = true;
+        
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         try {
@@ -108,7 +108,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     public void run() {
 
         int start = 1;
-        long startTime;
+        long startTime = 0;
         long endTime;
         long startTotTime;
         long endTotTime;
@@ -117,56 +117,56 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         while (counter < 10000) {
             startTotTime = System.currentTimeMillis();
-            
+
             newSettings = storageBoxSettings.getAvailable();
-            
-            if(newSettings == true){
+
+            if (newSettings == true) {
                 updateSettings();
             }
-         
-               
-            
-            
 
             try {
                 semaphoreCoordinates.acquire();
-                //startTime = System.currentTimeMillis();
+                startTime = System.currentTimeMillis();
             } catch (InterruptedException e) {
             }
-          
-                storageBoxCoordinates.put(counter);
 
-                startTime = System.currentTimeMillis();
+            storageBoxCoordinates.put(counter);
 
-                trackColors();
-
-                endTime = System.currentTimeMillis();
-                long time = endTime - startTime;
-                
-                //System.out.println("Time in TrackColors loop: " + time + "ms");
-
-            
+            //startTime = System.currentTimeMillis();
+            trackColors();
             semaphoreCoordinates.release();
+            //endTime = System.currentTimeMillis();
+            //long time = endTime - startTime;
 
+            //System.out.println("Time in TrackColors loop: " + time + "ms");
             endTime = System.currentTimeMillis();
-            //long time = endTime-startTime;
-            //System.out.println("Time elapsed from producer acquired to release " + time + "ms");
+            long totTime = endTime - startTime;
+            System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
 
-            // normally non-critical operations will be outside semaphore:
-        
-                //System.out.println("Producer put: " + counter);
-                counter++;
+            if (semaphoreVideoStream.tryAcquire()) {
+               
+               
+               
+                storageBoxVideoStream.put(webcam_image);
+                semaphoreVideoStream.release();
 
-            
-            endTotTime = System.currentTimeMillis();
-            long totTime = endTotTime - startTotTime;
-            //System.out.println("Total time in producer-loop: " + totTime + "ms");
-        }
+     }
+   
 
+        // normally non-critical operations will be outside semaphore:
+        //System.out.println("Producer put: " + counter);
+        counter++;
+
+        //endTotTime = System.currentTimeMillis();
+        //long totTime = endTotTime - startTotTime;
+        //System.out.println("Total time in producer-loop: " + totTime + "ms");
     }
 
-    private void createCameraFrame() throws AWTException {
+}
 
+private void createCameraFrame() throws AWTException {
+
+        if(cameraFramActive == true){
         cameraFrame = new JFrame("Camera");
         cameraFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cameraFrame.setSize(640, 480);
@@ -175,12 +175,11 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         cameraFrame.setContentPane(cameraPanel);
         cameraFrame.setVisible(true);
        
- 
+        }
 
 
     
-       // double[] hsv_values = new double[3];
-
+       
         capture = new VideoCapture(0);
         //capture.set(3,1920);
         // capture.set(4,1080);
@@ -194,7 +193,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         //capture.set(15, -2);
 
         capture.read(webcam_image);
+        if(cameraFramActive == true) {
         cameraFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+        }
         //hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
 
         //thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
@@ -206,8 +207,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     }
     
     private void createHsvFrame(){
-        
-        hsvFrameActive = true;
+
+        if(hsvFrameActive == true){
         
         hsvFrame = new JFrame("HSV");
         hsvFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -217,24 +218,23 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         hsvFrame.setContentPane(hsvPanel);
          hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
         hsvFrame.setVisible(true);
-        
+        }
         
     }
     
     public void createThresholdFrame(){
-        
-        thresholdFrameActive = true;
-        
+    
+        if(thresholdFrameActive == true){
         thresholdFrame = new JFrame("Threshold");
         thresholdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         thresholdFrame.setSize(640, 480);
-        thresholdFrame.setBounds(900, 300, hsvFrame.getWidth() + 900, 300 + hsvFrame.getHeight());
+      //  thresholdFrame.setBounds(900, 300, hsvFrame.getWidth() + 900, 300 + hsvFrame.getHeight());
         thresholdPanel = new Panel();
         thresholdFrame.setContentPane(thresholdPanel);
         thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
         
         thresholdFrame.setVisible(true);
-        
+        }
         
         
     }
@@ -275,11 +275,14 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
             Imgproc.drawContours(webcam_image, contours, -1, new Scalar(255, 0, 0), 2);
             //Imgproc.drawContours(webcam_image, contours2, -1, new Scalar(255, 0, 0), 2);
-
+                
+           
+            /*
             Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             data = webcam_image.get(210, 210);
             Core.putText(webcam_image, String.format("(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
                     , 1.0, new Scalar(100, 10, 10, 255), 3);
+            
             int thickness = 2;
             int lineType = 8;
             Point start = new Point(0, 0);
@@ -289,25 +292,37 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             int rows = circles.rows();
             int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a float)  
             float[] data2 = new float[rows * elemSize / 4];
-
+*/
             getTargetError();
-
-            Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
-            Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
+            addInfoToImage();
+            
+            //Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
+            //Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             hsv_values = hsv_image.get(210, 210);
  
 
-            Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-                    , 1.0, new Scalar(50, 10, 10, 255), 3);
+            //Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
+              //      , 1.0, new Scalar(50, 10, 10, 255), 3);
 
             distance.convertTo(distance, CvType.CV_8UC1);
-            Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
-            Core.circle(distance, new Point(210, 210), 10, new Scalar(100), 3);
-            data = (double[]) distance.get(210, 210);
+            
+            
+            
+            
+           // Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
+            //Core.circle(distance, new Point(210, 210), 10, new Scalar(100), 3);
+            //data = (double[]) distance.get(210, 210);
+            
             //getCoordinates(thresholded);
-            Core.putText(distance, String.format("(" + String.valueOf(data[0]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-                    , 1.0, new Scalar(100), 3);
+            
+            //Core.putText(distance, String.format("(" + String.valueOf(data[0]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
+              //      , 1.0, new Scalar(100), 3);
 
+            
+            
+            
+            updatePanels();
+            /*
             cameraPanel.setimagewithMat(webcam_image);
 
             hsvPanel.setimagewithMat(hsv_image);  
@@ -320,6 +335,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             hsvFrame.repaint();
             // frame3.repaint();  
             thresholdFrame.repaint();
+            */
         } else {
 
             System.out.println(" --(!) No captured frame -- Break!");
@@ -431,8 +447,11 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         
         try {
             semaphoreSettings.acquire();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ColorTrackSemaphoresSplitClass.class.getName()).log(Level.SEVERE, null, ex);
+        
+
+} catch (InterruptedException ex) {
+            Logger.getLogger(ColorTrackSemaphoresSplitClass.class
+.getName()).log(Level.SEVERE, null, ex);
         }
         
         double[] hsvValues = storageBoxSettings.getHsvSettings();
@@ -449,6 +468,51 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         
         
         
+    }
+
+    private void updatePanels() {
+        
+        if(cameraFramActive == true){ 
+        cameraPanel.setimagewithMat(webcam_image);
+ cameraFrame.repaint();
+        }
+        if(hsvFrameActive == true){
+            hsvPanel.setimagewithMat(hsv_image);  
+            hsvFrame.repaint();
+        }
+        if(thresholdFrameActive == true){
+              thresholdPanel.setimagewithMat(thresholded);
+               thresholdFrame.repaint();
+        }
+            //panel2.setimagewithMat(S);  
+            //distance.convertTo(distance, CvType.CV_8UC1);  
+            //panel3.setimagewithMat(distance);  
+            //thresholdPanel.setimagewithMat(thresholded);
+
+           // cameraFrame.repaint();
+           // hsvFrame.repaint();
+            // frame3.repaint();  
+           // thresholdFrame.repaint();
+    }
+
+    private void addInfoToImage() {
+        
+        if(cameraFramActive == true){
+        Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
+            data = webcam_image.get(210, 210);
+            Core.putText(webcam_image, String.format("(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
+                    , 1.0, new Scalar(100, 10, 10, 255), 3);
+        }
+        if(hsvFrameActive == true){
+             Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
+            Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
+            hsv_values = hsv_image.get(210, 210);
+ 
+
+            Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
+                    , 1.0, new Scalar(50, 10, 10, 255), 3);
+            
+        }
     }
 
 }

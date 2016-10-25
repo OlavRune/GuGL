@@ -4,42 +4,42 @@
  */
 package gmg.grenademachinegun;
 
+import org.opencv.core.Mat;
+
 /**
  *
  * @author ib
  */
 public class StorageBoxVideoStream {
-  private int contents;               // value to be stored
+  private Mat image;               // value to be stored
   private boolean available = false;  // flag
   
-  private float xError;
-  private float yError;
+
  
 
   public boolean getAvailable() {
     return available;
   }
   
-  public synchronized int get() {
+  public Mat get() {
     if (available == true) {
       // value not available, wait for producer
       available = false;
     }
-    return contents;
+    return image;
   }
 
   // reading value and resetting flag, wake up other threads (producer)
-  public void put(int value) {
-    if (available == false) {
-      contents = value; // store value
+  public void put(Mat imageToStream) {
+    
+      image = imageToStream; // store value
       available = true; // now available for consumer
     }
+  
+  
   }
   
-    public void putError(float x, float y){
+   
       
-      xError = x;
-      yError = y;
-      
-  }
-}
+  
+

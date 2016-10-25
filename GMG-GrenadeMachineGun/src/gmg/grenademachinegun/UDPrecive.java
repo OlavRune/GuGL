@@ -81,6 +81,10 @@ public class UDPrecive extends Thread {
 
     }
 
+    /**
+     * Protocol:
+     * 
+     */
     public void updateSettings() {
 
         int hueMinValue = gui.getHueMinValue();
