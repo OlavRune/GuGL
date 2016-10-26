@@ -5,8 +5,11 @@
  */
 package gmg.grenademachinegun;
 
+
 import java.awt.AWTException;
 import java.awt.Graphics;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 //import java.awt.Panel;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -88,7 +91,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         this.semaphoreCoordinates = semaphoreCoordinates;
         this.semaphoreSettings = semaphoreSettings;
         this.semaphoreVideoStream = semaphoreVideoStream;
-        
+
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
         try {
@@ -144,42 +147,44 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
 
             if (semaphoreVideoStream.tryAcquire()) {
-               
-               
-               
+
                 storageBoxVideoStream.put(webcam_image);
                 semaphoreVideoStream.release();
 
-     }
-   
+            }
 
-        // normally non-critical operations will be outside semaphore:
-        //System.out.println("Producer put: " + counter);
-        counter++;
+            // normally non-critical operations will be outside semaphore:
+            //System.out.println("Producer put: " + counter);
+            counter++;
 
-        //endTotTime = System.currentTimeMillis();
-        //long totTime = endTotTime - startTotTime;
-        //System.out.println("Total time in producer-loop: " + totTime + "ms");
-    }
-
-}
-
-private void createCameraFrame() throws AWTException {
-
-        if(cameraFramActive == true){
-        cameraFrame = new JFrame("Camera");
-        cameraFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        cameraFrame.setSize(640, 480);
-        cameraFrame.setBounds(0, 0, cameraFrame.getWidth(), cameraFrame.getHeight());
-        cameraPanel = new Panel();
-        cameraFrame.setContentPane(cameraPanel);
-        cameraFrame.setVisible(true);
-       
+            //endTotTime = System.currentTimeMillis();
+            //long totTime = endTotTime - startTotTime;
+            //System.out.println("Total time in producer-loop: " + totTime + "ms");
         }
 
+    }
 
-    
+    private void createCameraFrame() throws AWTException {
+
+        if (cameraFramActive == true) {
+            cameraFrame = new JFrame("Camera");
+            cameraFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
        
+            cameraFrame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    System.exit(0);
+               
+                }
+            });
+            cameraFrame.setSize(640, 480);
+            cameraFrame.setBounds(0, 0, cameraFrame.getWidth(), cameraFrame.getHeight());
+            cameraPanel = new Panel();
+            cameraFrame.setContentPane(cameraPanel);
+            cameraFrame.setVisible(true);
+  
+
+        }
+
         capture = new VideoCapture(0);
         //capture.set(3,1920);
         // capture.set(4,1080);
@@ -193,8 +198,8 @@ private void createCameraFrame() throws AWTException {
         //capture.set(15, -2);
 
         capture.read(webcam_image);
-        if(cameraFramActive == true) {
-        cameraFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+        if (cameraFramActive == true) {
+            cameraFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
         }
         //hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
 
@@ -202,41 +207,40 @@ private void createCameraFrame() throws AWTException {
         array255 = new Mat(webcam_image.height(), webcam_image.width(), CvType.CV_8UC1);
         array255.setTo(new Scalar(255));
         //Mat distance = new Mat(webcam_image.height(), webcam_image.width(), CvType.CV_8UC1);
-      //  List<Mat> lhsv = new ArrayList<>(3);
-       // Mat circles = new Mat();
+        //  List<Mat> lhsv = new ArrayList<>(3);
+        // Mat circles = new Mat();
     }
-    
-    private void createHsvFrame(){
 
-        if(hsvFrameActive == true){
-        
-        hsvFrame = new JFrame("HSV");
-        hsvFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        hsvFrame.setSize(640, 480);
-        hsvFrame.setBounds(300, 100, hsvFrame.getWidth() + 300, 100 + hsvFrame.getHeight());
-        hsvPanel = new Panel();
-        hsvFrame.setContentPane(hsvPanel);
-         hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
-        hsvFrame.setVisible(true);
+    private void createHsvFrame() {
+
+        if (hsvFrameActive == true) {
+
+            hsvFrame = new JFrame("HSV");
+            hsvFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            hsvFrame.setSize(640, 480);
+            hsvFrame.setBounds(300, 100, hsvFrame.getWidth() + 300, 100 + hsvFrame.getHeight());
+            hsvPanel = new Panel();
+            hsvFrame.setContentPane(hsvPanel);
+            hsvFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+            hsvFrame.setVisible(true);
         }
-        
+
     }
-    
-    public void createThresholdFrame(){
-    
-        if(thresholdFrameActive == true){
-        thresholdFrame = new JFrame("Threshold");
-        thresholdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        thresholdFrame.setSize(640, 480);
-      //  thresholdFrame.setBounds(900, 300, hsvFrame.getWidth() + 900, 300 + hsvFrame.getHeight());
-        thresholdPanel = new Panel();
-        thresholdFrame.setContentPane(thresholdPanel);
-        thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
-        
-        thresholdFrame.setVisible(true);
+
+    public void createThresholdFrame() {
+
+        if (thresholdFrameActive == true) {
+            thresholdFrame = new JFrame("Threshold");
+            thresholdFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            thresholdFrame.setSize(640, 480);
+            //  thresholdFrame.setBounds(900, 300, hsvFrame.getWidth() + 900, 300 + hsvFrame.getHeight());
+            thresholdPanel = new Panel();
+            thresholdFrame.setContentPane(thresholdPanel);
+            thresholdFrame.setSize(webcam_image.width() + 40, webcam_image.height() + 60);
+
+            thresholdFrame.setVisible(true);
         }
-        
-        
+
     }
 
     private void trackColors() {
@@ -245,8 +249,7 @@ private void createCameraFrame() throws AWTException {
         if (!webcam_image.empty()) {
 
             //Adjusting brightness and contrast
-           // webcam_image.convertTo(webcam_image, -1, brightness, contrast);
-
+            // webcam_image.convertTo(webcam_image, -1, brightness, contrast);
             //Adding blur to remove noise
             //Imgproc.blur(webcam_image, webcam_image, new Size(7, 7));
             // converting to HSV image
@@ -275,8 +278,7 @@ private void createCameraFrame() throws AWTException {
 
             Imgproc.drawContours(webcam_image, contours, -1, new Scalar(255, 0, 0), 2);
             //Imgproc.drawContours(webcam_image, contours2, -1, new Scalar(255, 0, 0), 2);
-                
-           
+
             /*
             Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             data = webcam_image.get(210, 210);
@@ -292,35 +294,24 @@ private void createCameraFrame() throws AWTException {
             int rows = circles.rows();
             int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a float)  
             float[] data2 = new float[rows * elemSize / 4];
-*/
+             */
             getTargetError();
             addInfoToImage();
-            
+
             //Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
             //Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             hsv_values = hsv_image.get(210, 210);
- 
 
             //Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-              //      , 1.0, new Scalar(50, 10, 10, 255), 3);
-
+            //      , 1.0, new Scalar(50, 10, 10, 255), 3);
             distance.convertTo(distance, CvType.CV_8UC1);
-            
-            
-            
-            
-           // Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
+
+            // Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
             //Core.circle(distance, new Point(210, 210), 10, new Scalar(100), 3);
             //data = (double[]) distance.get(210, 210);
-            
             //getCoordinates(thresholded);
-            
             //Core.putText(distance, String.format("(" + String.valueOf(data[0]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-              //      , 1.0, new Scalar(100), 3);
-
-            
-            
-            
+            //      , 1.0, new Scalar(100), 3);
             updatePanels();
             /*
             cameraPanel.setimagewithMat(webcam_image);
@@ -335,7 +326,7 @@ private void createCameraFrame() throws AWTException {
             hsvFrame.repaint();
             // frame3.repaint();  
             thresholdFrame.repaint();
-            */
+             */
         } else {
 
             System.out.println(" --(!) No captured frame -- Break!");
@@ -343,7 +334,6 @@ private void createCameraFrame() throws AWTException {
         }
 
     }
-
 
     private void createMat() {
         webcam_image = new Mat();
@@ -374,7 +364,6 @@ private void createCameraFrame() throws AWTException {
         contours.clear();
 
         if (x > 0) {
-           
 
             Core.circle(webcam_image, new Point(x, y), 4, new Scalar(50, 49, 0, 255), 4);
             //float centerX = cameraPanel.getWidth()/2;
@@ -432,7 +421,6 @@ private void createCameraFrame() throws AWTException {
         // Add initial values to HSV min settings
         double[] d = new double[]{3, 144, 115};
         hsv_min.set(d);
-      
 
         // Add initial vales to HSV max settings
         double[] m = new double[]{15, 245, 178};
@@ -444,75 +432,78 @@ private void createCameraFrame() throws AWTException {
     }
 
     private void updateSettings() {
-        
+
         try {
             semaphoreSettings.acquire();
-        
 
-} catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
             Logger.getLogger(ColorTrackSemaphoresSplitClass.class
-.getName()).log(Level.SEVERE, null, ex);
+                    .getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         double[] hsvValues = storageBoxSettings.getHsvSettings();
-        
+
         semaphoreSettings.release();
-        
-        double[] min = new double[]{hsvValues[0],hsvValues[1],hsvValues[2]};
+
+        double[] min = new double[]{hsvValues[0], hsvValues[1], hsvValues[2]};
         hsv_min.set(min);
         System.out.println(hsv_min);
-        
-        double[] max = new double[]{hsvValues[3],hsvValues[4],hsvValues[5]};
+
+        double[] max = new double[]{hsvValues[3], hsvValues[4], hsvValues[5]};
         hsv_max.set(max);
-        
-        
-        
-        
+
     }
 
     private void updatePanels() {
-        
-        if(cameraFramActive == true){ 
-        cameraPanel.setimagewithMat(webcam_image);
- cameraFrame.repaint();
+
+        if (cameraFramActive == true) {
+            cameraPanel.setimagewithMat(webcam_image);
+            cameraFrame.repaint();
         }
-        if(hsvFrameActive == true){
-            hsvPanel.setimagewithMat(hsv_image);  
+        if (hsvFrameActive == true) {
+            hsvPanel.setimagewithMat(hsv_image);
             hsvFrame.repaint();
         }
-        if(thresholdFrameActive == true){
-              thresholdPanel.setimagewithMat(thresholded);
-               thresholdFrame.repaint();
+        if (thresholdFrameActive == true) {
+            thresholdPanel.setimagewithMat(thresholded);
+            thresholdFrame.repaint();
         }
-            //panel2.setimagewithMat(S);  
-            //distance.convertTo(distance, CvType.CV_8UC1);  
-            //panel3.setimagewithMat(distance);  
-            //thresholdPanel.setimagewithMat(thresholded);
+        
+     
+             
+                   
+               
+       
+        //panel2.setimagewithMat(S);  
+        //distance.convertTo(distance, CvType.CV_8UC1);  
+        //panel3.setimagewithMat(distance);  
+        //thresholdPanel.setimagewithMat(thresholded);
 
-           // cameraFrame.repaint();
-           // hsvFrame.repaint();
-            // frame3.repaint();  
-           // thresholdFrame.repaint();
+        // cameraFrame.repaint();
+        // hsvFrame.repaint();
+        // frame3.repaint();  
+        // thresholdFrame.repaint();
     }
 
     private void addInfoToImage() {
-        
-        if(cameraFramActive == true){
-        Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
+
+        if (cameraFramActive == true) {
+            Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             data = webcam_image.get(210, 210);
             Core.putText(webcam_image, String.format("(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
                     , 1.0, new Scalar(100, 10, 10, 255), 3);
         }
-        if(hsvFrameActive == true){
-             Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
+        if (hsvFrameActive == true) {
+            Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
             Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             hsv_values = hsv_image.get(210, 210);
- 
 
             Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
                     , 1.0, new Scalar(50, 10, 10, 255), 3);
-            
+
         }
     }
+    
+  
 
 }
