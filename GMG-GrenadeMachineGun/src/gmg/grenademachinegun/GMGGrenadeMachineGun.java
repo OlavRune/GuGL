@@ -15,7 +15,6 @@ import javax.swing.JFrame;
  */
 public class GMGGrenadeMachineGun {
 
-    private static JFrame guiFrame;
 
     /**
      * @param args the command line arguments
@@ -23,7 +22,7 @@ public class GMGGrenadeMachineGun {
      */
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
-    // ColorTrack c = new ColorTrack();
+//    // ColorTrack c = new ColorTrack();
      
      
      // Adding Semaphores
@@ -32,35 +31,31 @@ public class GMGGrenadeMachineGun {
     boolean fairness = true;  // used in the Java's Semaphore
 
     System.out.println("Busy waiting...");
+ 
+    Semaphore semaphoreCoordinates = new Semaphore(numberOfPermits, fairness);
+    Semaphore semaphoreSettings = new Semaphore(numberOfPermits,fairness);
+    Semaphore semaphoreVideoStream = new Semaphore(numberOfPermits, fairness);
 
-    Semaphore semaphore = new Semaphore(numberOfPermits, fairness);
-    Semaphore GUIsemaphore = new Semaphore(numberOfPermits,fairness);
+    StorageBoxCoordinates storageBoxCoordinates = new StorageBoxCoordinates();
+    StorageBoxSettings storageBoxSettings = new StorageBoxSettings();
+    StorageBoxVideoStream storageBoxVideoStream = new StorageBoxVideoStream();
+    
+  
+    
+    
+    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
+    
 
-    StorageBoxCoordinates storageBox = new StorageBoxCoordinates();
-    StorageBoxSettings storageBoxGUI = new StorageBoxSettings();
+    ArduinoSerial ArduinoSerial = new ArduinoSerial(storageBoxCoordinates, 1, semaphoreCoordinates);
     
-    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBox, storageBoxGUI, GUIsemaphore, semaphore);
-    GUIcorrected gui = new GUIcorrected();
-     gui.importclass(color);
-    
-    //GUI g = new GUI();
-    //  guiFrame = new JFrame("GUI");
-      //  guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       // guiFrame.setSize(640, 480);
-    
-   //     guiFrame.setContentPane(gui);
-     //   guiFrame.setVisible(true);
-    
-    
-   
-    color.start();
-    //Producer producer[] = new Producer[numberOfProducers];
-
-    
-    Consumer c1 = new Consumer(storageBox, 1, semaphore, numberOfProducers);
+    UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers);
+    UDPsend send = new UDPsend(storageBoxVideoStream, numberOfPermits, semaphoreVideoStream);
+    recive.start();
+    send.start();
 
     // Start consumer threads
-    c1.start();
+    color.start();
+    ArduinoSerial.start();
      
      
      

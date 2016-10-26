@@ -20,7 +20,7 @@ public class GUIcorrected extends javax.swing.JPanel {
     int hueVal;    
     int satVal;
     int valVal;
-    ColorTrackSemaphoresSplitClass colorTrack;
+    UDPrecive udpRecive;
     
   
     
@@ -32,9 +32,10 @@ public class GUIcorrected extends javax.swing.JPanel {
         this.hueVal = hueVal;
    
     }
-    public void importclass(ColorTrackSemaphoresSplitClass c){
+    public void importclass(UDPrecive u){
         
-        this.colorTrack = c;
+        this.udpRecive = u;
+        
       
     }
 
@@ -358,7 +359,7 @@ public class GUIcorrected extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setText("jButton2");
+        jButton2.setText("Add values");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton2ActionPerformed(evt);
@@ -646,11 +647,13 @@ public class GUIcorrected extends javax.swing.JPanel {
 
     private void messageFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_messageFieldActionPerformed
         // TODO add your handling code here:
+    
     }//GEN-LAST:event_messageFieldActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
-        
+         udpRecive.updateSettings();
+      
         
     }//GEN-LAST:event_jButton2ActionPerformed
 
