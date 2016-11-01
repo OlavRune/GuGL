@@ -34,6 +34,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
+
 /**
  *
  * @author ib
@@ -50,15 +55,23 @@ public class UDPrecive extends Thread {
 
     private GUIcorrected gui;
     private JFrame guiFrame;
+    private final int PORT;
+    private static final int PARAMS = 6;
+    private DatagramSocket socket;
+    private DatagramPacket datagram;
 
     public UDPrecive(StorageBoxSettings storageBox, int consumerID, Semaphore semaphore,
-            int numberOfProducers) {
+            int numberOfProducers, int PORT) throws SocketException {
         this.storageBox = storageBox;
         this.semaphore = semaphore;
         this.consumerID = consumerID;
         this.sleepTime = 1;
         stop = false;
         this.numberOfProducerThreads = numberOfProducers;
+        this.PORT = PORT;
+       byte[] buf = new byte[PARAMS];
+        datagram = new DatagramPacket(buf, buf.length);
+        socket = new DatagramSocket(this.PORT);
 
         createGUI();
     }
@@ -134,6 +147,13 @@ public class UDPrecive extends Thread {
 
         semaphore.release();
 
+    }
+    
+    
+        public byte[] receiveParam() throws IOException{
+        socket.receive(datagram);
+        byte[] datagramData = datagram.getData();
+        return datagramData;
     }
 
 }
