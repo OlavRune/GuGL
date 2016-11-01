@@ -4,6 +4,8 @@
  */
 package gmg.grenademachinegun;
 
+import java.nio.ByteBuffer;
+
 /**
  *
  * @author ib
@@ -14,13 +16,14 @@ public class StorageBoxSettings {
     private boolean available = false;  // flag
 
     private double[] hsvSettings;
+    private byte[] hsvSettingsByte;
 
 
     public boolean getAvailable() {
         return available;
     }
 
-    public synchronized int get() {
+    public int get() {
         if (available == true) {
             // value not available, wait for producer
             available = false;
@@ -45,6 +48,28 @@ public class StorageBoxSettings {
      
     }
     
+      public void putHsvSettingsByte(byte[] hsvValues) {
+       if(available == false){
+            this.hsvSettingsByte = hsvValues;
+
+            available = true;
+       }
+     
+    }
+      public byte[] getHsvSettingsByte(){
+           if(available == true){
+            available = false;
+        }
+        return hsvSettingsByte;
+      }
+    
+
+    
+    
+
+
+
+   
     public double[] getHsvSettings(){
         if(available == true){
             available = false;

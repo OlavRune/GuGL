@@ -129,10 +129,13 @@ public class UDPrecive extends Thread {
             Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+        byte[] b = new byte[]{2,3,4};
         storageBox.putHsvSettings(val);
+       storageBox.putHsvSettingsByte(b);
         //System.out.println("putted values");
 
         semaphore.release();
+        System.out.println("reløease");
 
     }
 

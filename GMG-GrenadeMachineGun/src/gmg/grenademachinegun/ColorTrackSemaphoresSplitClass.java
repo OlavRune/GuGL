@@ -12,6 +12,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 //import java.awt.Panel;
 import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -185,7 +186,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         }
 
-        capture = new VideoCapture(0);
+        capture = new VideoCapture(1);
         //capture.set(3,1920);
         // capture.set(4,1080);
         //capture.set(5,40);
@@ -256,8 +257,11 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             Imgproc.cvtColor(webcam_image, hsv_image, Imgproc.COLOR_BGR2HSV);
 
             //Checking if the hsv image is in range.
+            
             Core.inRange(hsv_image, hsv_min, hsv_max, thresholded);
-
+                //Core.inRange(hsv_image, hsv_minByte, hsv_maxByte, thresholded);
+                
+                
             Imgproc.erode(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
             Imgproc.dilate(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
             Core.split(hsv_image, lhsv); // We get 3 2D one channel Mats  
@@ -421,6 +425,10 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         // Add initial values to HSV min settings
         double[] d = new double[]{3, 144, 115};
         hsv_min.set(d);
+        byte b = 255-128;
+        byte[] e = new byte[]{3, b,115};
+        byte x = e[1];
+        
 
         // Add initial vales to HSV max settings
         double[] m = new double[]{15, 245, 178};
@@ -442,12 +450,19 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         }
 
         double[] hsvValues = storageBoxSettings.getHsvSettings();
-
+       // byte[] hsvValuesByte = storageBoxSettings.getHsvSettingsByte();
+byte[] hsvValuesByte = storageBoxSettings.getHsvSettingsByte();
         semaphoreSettings.release();
 
+        /*
         double[] min = new double[]{hsvValues[0], hsvValues[1], hsvValues[2]};
         hsv_min.set(min);
         System.out.println(hsv_min);
+        */
+         double[] min = new double[]{hsvValuesByte[0], hsvValuesByte[1], hsvValuesByte[2]};
+        hsv_min.set(min);
+        System.out.println(hsv_min);
+        
 
         double[] max = new double[]{hsvValues[3], hsvValues[4], hsvValues[5]};
         hsv_max.set(max);
@@ -504,6 +519,15 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         }
     }
     
+    public double[] ByteToDouble(byte[] byteArray){
+    int times = Double.SIZE / Byte.SIZE;
+    double[] doubles = new double[byteArray.length / times];
+    for(int i=0;i<doubles.length;i++){
+        doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getDouble();
+    }
+    return doubles;
+    
   
 
+}
 }

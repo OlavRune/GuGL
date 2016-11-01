@@ -92,8 +92,9 @@ public class UDPsend extends Thread {
         image = storageBox.get();
       }
       semaphore.release();
+        
       
-      sendImage(image);
+      //sendImage(image);
       
       endTime = System.currentTimeMillis();
        long time = (endTime-startTime);
