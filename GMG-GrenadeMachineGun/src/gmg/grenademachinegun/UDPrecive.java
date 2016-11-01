@@ -2,6 +2,31 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+/*  ------ HOW TO DOUBLE[] TO BYTE[]
+Convert your doubles into a byte array using java.nio.ByteBuffer
+
+ByteBuffer bb = ByteBuffer.allocate(doubles.length * 8);
+for(double d : doubles) {
+   bb.putDouble(d);
+}
+get the byte array
+
+byte[] bytearray = bb.array();
+send it over the net and then convert it to double array on the receiving side
+
+ByteBuffer bb = ByteBuffer.wrap(bytearray);
+double[] doubles = new double(bytearray.length / 8);
+for(int i = 0; i < doubles.length; i++) {
+    doubles[i] = bb.getDouble();
+}
+*/
+
+
+
+
+
+
+
 package gmg.grenademachinegun;
 
 import java.util.concurrent.Semaphore;
