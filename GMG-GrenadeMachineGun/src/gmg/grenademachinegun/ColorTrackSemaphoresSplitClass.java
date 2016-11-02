@@ -122,11 +122,13 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         while (counter < 10000) {
             startTotTime = System.currentTimeMillis();
 
+            semaphoreSettings.tryAcquire();
             newSettings = storageBoxSettings.getAvailable();
 
-            if (newSettings == true) {
+            if (newSettings) {
                 updateSettings();
             }
+            semaphoreSettings.release();
 
             try {
                 semaphoreCoordinates.acquire();
@@ -441,30 +443,19 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     private void updateSettings() {
 
-        try {
-            semaphoreSettings.acquire();
-
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ColorTrackSemaphoresSplitClass.class
-                    .getName()).log(Level.SEVERE, null, ex);
-        }
-
+      
         double[] hsvValues = storageBoxSettings.getHsvSettings();
-       // byte[] hsvValuesByte = storageBoxSettings.getHsvSettingsByte();
-byte[] hsvValuesByte = storageBoxSettings.getHsvSettingsByte();
-        semaphoreSettings.release();
+       
 
-        /*
-        double[] min = new double[]{hsvValues[0], hsvValues[1], hsvValues[2]};
-        hsv_min.set(min);
-        System.out.println(hsv_min);
-        */
-         double[] min = new double[]{hsvValuesByte[0], hsvValuesByte[1], hsvValuesByte[2]};
+       
+
+        
+        double[] min = new double[]{hsvValues[0], hsvValues[2], hsvValues[4]};
         hsv_min.set(min);
         System.out.println(hsv_min);
         
 
-        double[] max = new double[]{hsvValues[3], hsvValues[4], hsvValues[5]};
+        double[] max = new double[]{hsvValues[1], hsvValues[3], hsvValues[5]};
         hsv_max.set(max);
 
     }
@@ -519,15 +510,5 @@ byte[] hsvValuesByte = storageBoxSettings.getHsvSettingsByte();
         }
     }
     
-    public double[] ByteToDouble(byte[] byteArray){
-    int times = Double.SIZE / Byte.SIZE;
-    double[] doubles = new double[byteArray.length / times];
-    for(int i=0;i<doubles.length;i++){
-        doubles[i] = ByteBuffer.wrap(byteArray, i*times, times).getDouble();
-    }
-    return doubles;
-    
   
-
-}
 }

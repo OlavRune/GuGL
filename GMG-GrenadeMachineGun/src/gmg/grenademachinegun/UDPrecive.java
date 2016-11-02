@@ -85,13 +85,26 @@ public class UDPrecive extends Thread {
         long endTime = 0;
 
         while (!stop) {
-            byte[] b = new byte[]{0};
+            byte[] b = new byte[5];
             try {
                 b = receiveParam();
             } catch (IOException ex) {
                 Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println(Arrays.toString(b));
+            
+            
+            double[] d = byteToDouble(b);
+           
+            try {
+                semaphore.acquire();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            storageBox.putHsvSettings(d);
+            semaphore.release();
+           
+            
+            
 
         }
         /**
@@ -162,6 +175,30 @@ public class UDPrecive extends Thread {
         socket.receive(datagram);
         byte[] datagramData = datagram.getData();
         return datagramData;
+    }
+
+    private double[] byteToDouble(byte[] b) {
+         /*
+        int i = 255;
+        byte b = (byte) i;
+        int s = b & (0xff);
+    
+        System.out.println("" + i + " " + b +" "  +s);
+        
+        byte signedByte = b;
+int unsignedByte = signedByte & (0xff);
+
+System.out.println("Signed: " + signedByte + " Unsigned: " + unsignedByte);
+        */
+         double[] d = new double[b.length];
+      //  System.out.println(b.length);
+         
+        for (int i = 0; i < b.length; i++ ){
+            d[i] = b[i] & (0xff);
+          //  System.out.println(i + " " + d[i]);
+        }
+        
+        return d;
     }
 
 }
