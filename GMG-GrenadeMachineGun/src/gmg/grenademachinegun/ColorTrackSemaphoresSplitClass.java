@@ -5,7 +5,6 @@
  */
 package gmg.grenademachinegun;
 
-
 import java.awt.AWTException;
 import java.awt.Graphics;
 import java.awt.event.WindowAdapter;
@@ -61,6 +60,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private boolean cameraFramActive = true; //Flag to activate cameraframe
     private boolean hsvFrameActive = false; //flag to activate the hsvFrame
     private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
+    private boolean timerActive = true;
+    private boolean videoStreamActive = true;
 
     private Scalar hsv_min;
     private Scalar hsv_max;
@@ -83,6 +84,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private boolean newSettings;    //flag to check if there are new settings in StoreageboxSettings
 
     int counter = 0;
+    private long startTime;
+    private long endTime;
 
     public ColorTrackSemaphoresSplitClass(StorageBoxCoordinates storageBoxCoordinates, StorageBoxSettings storageBoxSettings, StorageBoxVideoStream storageBoxVideoStream, Semaphore semaphoreCoordinates, Semaphore semaphoreSettings, Semaphore semaphoreVideoStream) {
 
@@ -119,50 +122,37 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         counter = start;
 
-        while (counter < 10000) {
-            startTotTime = System.currentTimeMillis();
+        boolean stop = false;
 
-            semaphoreSettings.tryAcquire();
-            newSettings = storageBoxSettings.getAvailable();
+        while (!stop) {
 
-            if (newSettings) {
-                updateSettings();
+            if (timerActive) {
+                startTimer();
             }
-            semaphoreSettings.release();
+
+            TryUpdateSettings();
 
             try {
                 semaphoreCoordinates.acquire();
-                startTime = System.currentTimeMillis();
+              
             } catch (InterruptedException e) {
             }
 
+            trackColors();
             storageBoxCoordinates.put(counter);
 
-            //startTime = System.currentTimeMillis();
-            trackColors();
             semaphoreCoordinates.release();
-            //endTime = System.currentTimeMillis();
-            //long time = endTime - startTime;
 
-            //System.out.println("Time in TrackColors loop: " + time + "ms");
-            endTime = System.currentTimeMillis();
-            long totTime = endTime - startTime;
-            System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
-
-            if (semaphoreVideoStream.tryAcquire()) {
-
-                storageBoxVideoStream.put(webcam_image);
-                semaphoreVideoStream.release();
-
+            if (timerActive) {
+                stopTimer();
             }
+            
+            if(videoStreamActive){
+                streamVideo();
+            }
+     
+          
 
-            // normally non-critical operations will be outside semaphore:
-            //System.out.println("Producer put: " + counter);
-            counter++;
-
-            //endTotTime = System.currentTimeMillis();
-            //long totTime = endTotTime - startTotTime;
-            //System.out.println("Total time in producer-loop: " + totTime + "ms");
         }
 
     }
@@ -172,11 +162,11 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         if (cameraFramActive == true) {
             cameraFrame = new JFrame("Camera");
             cameraFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-       
+
             cameraFrame.addWindowListener(new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
                     System.exit(0);
-               
+
                 }
             });
             cameraFrame.setSize(640, 480);
@@ -184,7 +174,6 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             cameraPanel = new Panel();
             cameraFrame.setContentPane(cameraPanel);
             cameraFrame.setVisible(true);
-  
 
         }
 
@@ -259,11 +248,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             Imgproc.cvtColor(webcam_image, hsv_image, Imgproc.COLOR_BGR2HSV);
 
             //Checking if the hsv image is in range.
-            
             Core.inRange(hsv_image, hsv_min, hsv_max, thresholded);
-                //Core.inRange(hsv_image, hsv_minByte, hsv_maxByte, thresholded);
-                
-                
+            //Core.inRange(hsv_image, hsv_minByte, hsv_maxByte, thresholded);
+
             Imgproc.erode(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
             Imgproc.dilate(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
             Core.split(hsv_image, lhsv); // We get 3 2D one channel Mats  
@@ -427,10 +414,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         // Add initial values to HSV min settings
         double[] d = new double[]{3, 144, 115};
         hsv_min.set(d);
-        byte b = 255-128;
-        byte[] e = new byte[]{3, b,115};
+        byte b = 255 - 128;
+        byte[] e = new byte[]{3, b, 115};
         byte x = e[1];
-        
 
         // Add initial vales to HSV max settings
         double[] m = new double[]{15, 245, 178};
@@ -443,17 +429,10 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     private void updateSettings() {
 
-      
         double[] hsvValues = storageBoxSettings.getHsvSettings();
-       
 
-       
-
-        
         double[] min = new double[]{hsvValues[0], hsvValues[2], hsvValues[4]};
         hsv_min.set(min);
-        System.out.println(hsv_min);
-        
 
         double[] max = new double[]{hsvValues[1], hsvValues[3], hsvValues[5]};
         hsv_max.set(max);
@@ -474,17 +453,11 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             thresholdPanel.setimagewithMat(thresholded);
             thresholdFrame.repaint();
         }
-        
-     
-             
-                   
-               
-       
+
         //panel2.setimagewithMat(S);  
         //distance.convertTo(distance, CvType.CV_8UC1);  
         //panel3.setimagewithMat(distance);  
         //thresholdPanel.setimagewithMat(thresholded);
-
         // cameraFrame.repaint();
         // hsvFrame.repaint();
         // frame3.repaint();  
@@ -509,6 +482,38 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         }
     }
-    
-  
+
+    private void TryUpdateSettings() {
+        semaphoreSettings.tryAcquire();
+        newSettings = storageBoxSettings.getAvailable();
+
+        if (newSettings) {
+            updateSettings();
+        }
+        semaphoreSettings.release();
+    }
+
+    private void startTimer() {
+        startTime = System.currentTimeMillis();
+    }
+
+    private void stopTimer() {
+
+        endTime = System.currentTimeMillis();
+        long totTime = endTime - startTime;
+        System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
+    }
+
+    private void streamVideo() {
+        
+        
+          
+            if (semaphoreVideoStream.tryAcquire()) {
+
+                storageBoxVideoStream.put(webcam_image);
+                semaphoreVideoStream.release();
+
+            }
+    }
+
 }
