@@ -85,14 +85,14 @@ public class UDPrecive extends Thread {
         long endTime = 0;
 
         while (!stop) {
-            byte[] b = new byte[6];
+            byte[] b = new byte[7];
             try {
                 b = receiveParam();
             } catch (IOException ex) {
                 Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            
+           
             double[] d = byteToDouble(b);
            
             try {
@@ -198,6 +198,7 @@ System.out.println("Signed: " + signedByte + " Unsigned: " + unsignedByte);
           //  System.out.println(i + " " + d[i]);
         }
         
+     
         return d;
     }
 
