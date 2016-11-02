@@ -15,7 +15,7 @@ import org.opencv.core.Mat;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
-import sun.security.util.Length;
+
 
 /**
  *

@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 /**
  *
@@ -84,6 +85,13 @@ public class UDPrecive extends Thread {
         long endTime = 0;
 
         while (!stop) {
+            byte[] b = new byte[]{0};
+            try {
+                b = receiveParam();
+            } catch (IOException ex) {
+                Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            System.out.println(Arrays.toString(b));
 
         }
         /**
