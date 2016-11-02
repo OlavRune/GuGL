@@ -74,7 +74,7 @@ public class UDPrecive extends Thread {
         datagram = new DatagramPacket(buf, buf.length);
         socket = new DatagramSocket(this.PORT);
 
-        createGUI();
+       // createGUI();
     }
 
     public void run() {
