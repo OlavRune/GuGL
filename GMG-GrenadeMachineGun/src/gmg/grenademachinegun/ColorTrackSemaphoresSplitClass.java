@@ -54,14 +54,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private double[] data;
     private Mat circles;
     private double[] hsv_values;
-    private double brightness;
-    private double contrast;
 
     private boolean cameraFramActive = true; //Flag to activate cameraframe
     private boolean hsvFrameActive = false; //flag to activate the hsvFrame
     private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
-    private boolean timerActive = true;
-    private boolean videoStreamActive = true;
+    private boolean timerActive = false;
+    private boolean videoStreamActive;
 
     private Scalar hsv_min;
     private Scalar hsv_max;
@@ -421,9 +419,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         // Add initial vales to HSV max settings
         double[] m = new double[]{15, 245, 178};
         hsv_max.set(m);
+        
+        videoStreamActive = false;
 
-        double brightness = 1;
-        double contrast = 1;
 
     }
 
@@ -436,6 +434,17 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         double[] max = new double[]{hsvValues[1], hsvValues[3], hsvValues[5]};
         hsv_max.set(max);
+        
+        if(hsvValues[6] == 1){
+            videoStreamActive = true;
+        }
+        else
+            videoStreamActive = false;
+        
+        System.out.println(videoStreamActive);
+        
+        
+        
 
     }
 
@@ -509,8 +518,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         
           
             if (semaphoreVideoStream.tryAcquire()) {
-
+                
+                VideoStreamBoxAvailable = storageBoxVideoStream.getAvailable();
+                if(VideoStreamBoxAvailable){
                 storageBoxVideoStream.put(webcam_image);
+                }
+                
                 semaphoreVideoStream.release();
 
             }

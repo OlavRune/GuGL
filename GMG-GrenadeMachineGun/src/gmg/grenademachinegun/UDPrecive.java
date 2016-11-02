@@ -85,7 +85,7 @@ public class UDPrecive extends Thread {
         long endTime = 0;
 
         while (!stop) {
-            byte[] b = new byte[5];
+            byte[] b = new byte[6];
             try {
                 b = receiveParam();
             } catch (IOException ex) {
