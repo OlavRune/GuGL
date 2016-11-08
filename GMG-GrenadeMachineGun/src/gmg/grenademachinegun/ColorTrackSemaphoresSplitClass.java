@@ -438,7 +438,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         newSettingsFromStorageBox = storageBoxSettings.getSettings();
         
         String print = null;
-        for(int i = 1; i < 15; i++){
+        for(int i = 1; i < 20; i++){
             print = print + newSettingsFromStorageBox[i] + " " ;
             
         }
@@ -467,6 +467,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             updateManualMoveValues(false);
         }
         
+        double[] fireSettings = new double[]{newSettingsFromStorageBox[13], newSettingsFromStorageBox[14]};
+        storageBoxCoordinates.putFireSettings(fireSettings);
         
         
         
