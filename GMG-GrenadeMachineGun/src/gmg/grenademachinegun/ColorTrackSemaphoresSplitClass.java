@@ -164,12 +164,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             } catch (InterruptedException e) {
             }
 
-            if(manualModeActive){
-               // maybe something
-            }
-            else{
+            
             trackColors();
-            }
+            
             storageBoxCoordinates.put(counter);
         
 
@@ -422,8 +419,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             // System.out.println("angleErrorX: "+angleErrorX);
             // System.out.println("angleErrorY: "+angleErrorY);
             //  System.out.println(counter);
+            if(manualModeActive == false){
             storageBoxCoordinates.putError(angleErrorX, angleErrorY);
-
+            }
         }
 
     }
