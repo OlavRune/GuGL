@@ -139,7 +139,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             }
 
             if(manualModeActive){
-                putMoveValuesFromGUI();
+               // maybe something
             }
             else{
             trackColors();
@@ -437,21 +437,28 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         newSettingsFromStorageBox = storageBoxSettings.getSettings();
         
-        double[] min = new double[]{newSettingsFromStorageBox[0], newSettingsFromStorageBox[2], newSettingsFromStorageBox[4]};
+        String print = null;
+        for(int i = 1; i < 15; i++){
+            print = print + newSettingsFromStorageBox[i] + " " ;
+            
+        }
+        System.out.println(print);
+        
+        double[] min = new double[]{newSettingsFromStorageBox[1], newSettingsFromStorageBox[3], newSettingsFromStorageBox[5]};
         hsv_min.set(min);
 
-        double[] max = new double[]{newSettingsFromStorageBox[1], newSettingsFromStorageBox[3], newSettingsFromStorageBox[5]};
+        double[] max = new double[]{newSettingsFromStorageBox[2], newSettingsFromStorageBox[4], newSettingsFromStorageBox[6]};
         hsv_max.set(max);
         
         
         //System.out.println("Value recived: " + newSettingsFromStorageBox[6]);
-        if((newSettingsFromStorageBox[6]) == 1){
+        if((newSettingsFromStorageBox[7]) == 1){
             videoStreamActive = true;
         }
         else
             videoStreamActive = false;
         
-        if(newSettingsFromStorageBox[7]==1){
+        if(newSettingsFromStorageBox[8]==1){
             manualModeActive = true;
             updateManualMoveValues(true);
         }
@@ -561,8 +568,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         if(active){
             // (up value minus down value)
             // (right value minus left value)
-            float x = (float) (newSettingsFromStorageBox[11]-newSettingsFromStorageBox[10]);
-            float y = (float) (newSettingsFromStorageBox[8]-newSettingsFromStorageBox[9]);
+            float x = (float) (newSettingsFromStorageBox[12]-newSettingsFromStorageBox[11]);
+            float y = (float) (newSettingsFromStorageBox[9]-newSettingsFromStorageBox[10]);
            
             storageBoxCoordinates.putError(x, y);
         }
@@ -572,8 +579,6 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         }
     }
 
-    private void putMoveValuesFromGUI() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   
 
 }
