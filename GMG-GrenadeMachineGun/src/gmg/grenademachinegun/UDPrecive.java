@@ -54,10 +54,8 @@ public class UDPrecive extends Thread {
     private boolean available;
     private long sleepTime;
 
-    private GUIcorrected gui;
-    private JFrame guiFrame;
     private final int PORT;
-    private static final int PARAMS = 6;
+    private static final int PARAMS = 20;
     private DatagramSocket socket;
     private DatagramPacket datagram;
 
@@ -85,14 +83,16 @@ public class UDPrecive extends Thread {
         long endTime = 0;
 
         while (!stop) {
-            byte[] b = new byte[7];
+            byte[] b = new byte[20];
             try {
                 b = receiveParam();
             } catch (IOException ex) {
                 Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
             }
             
+           // convert values from byte to double
            
+           // System.out.println("length of byte array recived: " + b.length);
             double[] d = byteToDouble(b);
            
             try {
@@ -100,7 +100,7 @@ public class UDPrecive extends Thread {
             } catch (InterruptedException ex) {
                 Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
             }
-            storageBox.putHsvSettings(d);
+            storageBox.putSettings(d);
             semaphore.release();
            
             
@@ -128,68 +128,17 @@ public class UDPrecive extends Thread {
          */
     }
 
-    private void createGUI() {
-
-        guiFrame = new JFrame("Slider");
-        guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        guiFrame.setSize(640, 480);
-        gui = new GUIcorrected();
-        guiFrame.setContentPane(gui);
-        guiFrame.setVisible(true);
-        gui.importclass(this);
-
-    }
-
-    /**
-     * Protocol:
-     * 
-     */
-    public void updateSettings() {
-
-        int hueMinValue = gui.getHueMinValue();
-        int hueMaxValue = gui.getHueMaxValue();
-
-        int satMinValue = gui.getSaturationMinValue();
-        int satMaxValue = gui.getSaturationeMaxValue();
-
-        int valMinValue = gui.getValueMinValue();
-        int valMaxValue = gui.getValueMaxValue();
-
-        // putting the settings in a double field
-        double[] val = new double[]{hueMinValue,satMinValue,valMinValue, hueMaxValue, satMaxValue, valMaxValue};
-        try {
-            semaphore.acquire();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(UDPrecive.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        storageBox.putHsvSettings(val);
-        //System.out.println("putted values");
-
-        semaphore.release();
-
-    }
-    
     
         public byte[] receiveParam() throws IOException{
         socket.receive(datagram);
         byte[] datagramData = datagram.getData();
+            //System.out.println("datagramData length: " + datagramData.length);
         return datagramData;
     }
 
     private double[] byteToDouble(byte[] b) {
-         /*
-        int i = 255;
-        byte b = (byte) i;
-        int s = b & (0xff);
-    
-        System.out.println("" + i + " " + b +" "  +s);
-        
-        byte signedByte = b;
-int unsignedByte = signedByte & (0xff);
-
-System.out.println("Signed: " + signedByte + " Unsigned: " + unsignedByte);
-        */
+       
+       
          double[] d = new double[b.length];
       //  System.out.println(b.length);
          

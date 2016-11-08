@@ -60,6 +60,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
     private boolean timerActive = false;
     private boolean videoStreamActive;
+    private boolean manualModeActive;
 
     private Scalar hsv_min;
     private Scalar hsv_max;
@@ -84,6 +85,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     int counter = 0;
     private long startTime;
     private long endTime;
+    private double[] newSettingsFromStorageBox;
 
     public ColorTrackSemaphoresSplitClass(StorageBoxCoordinates storageBoxCoordinates, StorageBoxSettings storageBoxSettings, StorageBoxVideoStream storageBoxVideoStream, Semaphore semaphoreCoordinates, Semaphore semaphoreSettings, Semaphore semaphoreVideoStream) {
 
@@ -136,8 +138,14 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             } catch (InterruptedException e) {
             }
 
+            if(manualModeActive){
+                putMoveValuesFromGUI();
+            }
+            else{
             trackColors();
+            }
             storageBoxCoordinates.put(counter);
+        
 
             semaphoreCoordinates.release();
 
@@ -427,21 +435,36 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     private void updateSettings() {
 
-        double[] hsvValues = storageBoxSettings.getHsvSettings();
-
-        double[] min = new double[]{hsvValues[0], hsvValues[2], hsvValues[4]};
+        newSettingsFromStorageBox = storageBoxSettings.getSettings();
+        
+        double[] min = new double[]{newSettingsFromStorageBox[0], newSettingsFromStorageBox[2], newSettingsFromStorageBox[4]};
         hsv_min.set(min);
 
-        double[] max = new double[]{hsvValues[1], hsvValues[3], hsvValues[5]};
+        double[] max = new double[]{newSettingsFromStorageBox[1], newSettingsFromStorageBox[3], newSettingsFromStorageBox[5]};
         hsv_max.set(max);
         
-        if(hsvValues[6] == 1){
+        
+        //System.out.println("Value recived: " + newSettingsFromStorageBox[6]);
+        if((newSettingsFromStorageBox[6]) == 1){
             videoStreamActive = true;
         }
         else
             videoStreamActive = false;
         
-        System.out.println(videoStreamActive);
+        if(newSettingsFromStorageBox[7]==1){
+            manualModeActive = true;
+            updateManualMoveValues(true);
+        }
+        else{
+            manualModeActive = false;
+            updateManualMoveValues(false);
+        }
+        
+        
+        
+        
+        
+        //System.out.println("Value of videostreamActive from GUI: " +videoStreamActive);
         
         
         
@@ -527,6 +550,30 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
                 semaphoreVideoStream.release();
 
             }
+    }
+
+    private void updateManualMoveValues(boolean active) {
+       /*
+        calculating the manual movement from the gui.
+        input: buttonvalues up,down,left,right
+        output: X and Y coordinates
+        */
+        if(active){
+            // (up value minus down value)
+            // (right value minus left value)
+            float x = (float) (newSettingsFromStorageBox[11]-newSettingsFromStorageBox[10]);
+            float y = (float) (newSettingsFromStorageBox[8]-newSettingsFromStorageBox[9]);
+           
+            storageBoxCoordinates.putError(x, y);
+        }
+        
+        else{
+           
+        }
+    }
+
+    private void putMoveValuesFromGUI() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

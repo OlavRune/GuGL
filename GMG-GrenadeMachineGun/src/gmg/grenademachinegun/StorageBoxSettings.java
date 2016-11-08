@@ -15,9 +15,8 @@ public class StorageBoxSettings {
     private int contents;               // value to be stored
     private boolean available = false;  // flag
 
-    private double[] hsvSettings;
+    private double[] setttings;
     private byte[] hsvSettingsByte;
-
 
     public boolean getAvailable() {
         return available;
@@ -39,44 +38,20 @@ public class StorageBoxSettings {
         }
     }
 
-    public void putHsvSettings(double[] hsvValues) {
-       if(available == false){
-            this.hsvSettings = hsvValues;
+    public void putSettings(double[] hsvValues) {
+        if (available == false) {
+            this.setttings = hsvValues;
 
             available = true;
-       }
-     
-    }
-    
-      public void putHsvSettingsByte(byte[] hsvValues) {
-       if(available == false){
-            this.hsvSettingsByte = hsvValues;
+        }
 
-            available = true;
-       }
-     
     }
-      public byte[] getHsvSettingsByte(){
-           if(available == true){
+
+    public double[] getSettings() {
+        if (available == true) {
             available = false;
         }
-        return hsvSettingsByte;
-      }
-    
-
-    
-    
-
-
-
-   
-    public double[] getHsvSettings(){
-        if(available == true){
-            available = false;
-        }
-        return hsvSettings;
+        return setttings;
     }
-    
- 
-    
+
 }
