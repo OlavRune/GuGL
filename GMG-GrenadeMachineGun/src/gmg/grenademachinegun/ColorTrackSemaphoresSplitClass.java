@@ -148,6 +148,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
                 
                 if(fire == 1){
                     l.execute(Launcher.Command.FIRE);
+                    fire = 0;
                 }
                 if(shootToKill == 1){
                     l.execute(Launcher.Command.LEDON);
