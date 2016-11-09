@@ -11,6 +11,7 @@ import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Random;
@@ -55,6 +56,7 @@ public class SerialCom implements SerialPortEventListener {
      * The output stream to the port
      */
     private OutputStream output;
+    private InputStream inputStream;
     /**
      * Milliseconds to block while waiting for port open
      */
@@ -100,17 +102,33 @@ public class SerialCom implements SerialPortEventListener {
                     SerialPort.PARITY_NONE);
             
             output = serialPort.getOutputStream();
+            inputStream = serialPort.getInputStream();
             
             
             //Random r = new Random();
             while(running){
+                long start = System.currentTimeMillis();
              byte[] sendValue = getValues();
+             byte[] inputByte = new byte[2];
                 
                
              //int i = r.nextInt(255);
+           
              output.write(sendValue);
+             inputStream.read(inputByte);
+             if(sendValue == inputByte){
+                 long stop = System.currentTimeMillis();
+                 long timeTaken = start-stop;
+                 System.out.println("Time from aquire to recive: " + timeTaken);
+             }
+             else
+                    System.out.println("not equal");
+             
+             
+             
+             
              //System.out.println(i);
-                System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!" + sendValue[0] + " " + sendValue[1]);
+               // System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!" + sendValue[0] + " " + sendValue[1]);
              Thread.sleep(20);
             }
             
@@ -158,7 +176,7 @@ public class SerialCom implements SerialPortEventListener {
     private byte[] getValues() {
        
         
-                     double[] d = new double[2];
+                
                      byte[] b = new byte[2];
         
          try {
@@ -176,9 +194,6 @@ public class SerialCom implements SerialPortEventListener {
          }
          
          semaphore.release();
-         
-         //int x = 90 + d[0];
-         //int y = 90 + d[1];
          
          
          
