@@ -69,7 +69,7 @@ public class SerialCom implements SerialPortEventListener {
     public void initialize(){
      // the next line is for Raspberry Pi and 
      // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
-     // System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
+     System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
 
         CommPortIdentifier portId = null;
         Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
@@ -102,15 +102,15 @@ public class SerialCom implements SerialPortEventListener {
             output = serialPort.getOutputStream();
             
             
-            Random r = new Random();
+            //Random r = new Random();
             while(running){
-             int sendValue = getValues();
+             byte[] sendValue = getValues();
                 
                
-             int i = r.nextInt(255);
+             //int i = r.nextInt(255);
              output.write(sendValue);
-             System.out.println(i);
-                System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!");
+             //System.out.println(i);
+                System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!" + sendValue[0] + " " + sendValue[1]);
              Thread.sleep(20);
             }
             
@@ -155,10 +155,11 @@ public class SerialCom implements SerialPortEventListener {
 }
 
 
-    private int getValues() {
+    private byte[] getValues() {
        
-        int returnValue = 0;
+        
                      double[] d = new double[2];
+                     byte[] b = new byte[2];
         
          try {
              semaphore.acquire();
@@ -170,18 +171,19 @@ public class SerialCom implements SerialPortEventListener {
          
          if(available){
             
-             d = storagebox.getError();
+             //d = storagebox.getErrorAsByte();
+             b = storagebox.getErrorAsByte();
          }
          
          semaphore.release();
          
-         int x = (int) d[0]/2;
-         int y = (int) d[1]/2;
-         
-         returnValue = x +(128-x) +  y;
+         //int x = 90 + d[0];
+         //int y = 90 + d[1];
          
          
-         return returnValue;
+         
+         
+         return b;
          
     }
    
