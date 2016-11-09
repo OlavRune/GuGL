@@ -70,6 +70,10 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Mat array255;
     private Mat distance;
     List<MatOfPoint> contours;
+    
+    long timeAtErrorPut;
+    
+    
 
     private Launcher l;
 
@@ -260,6 +264,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
     private void trackColors() {
 
+        long currentTime = System.currentTimeMillis();
+        
+        if(currentTime - timeAtErrorPut > 150) {
         capture.read(webcam_image);
         if (!webcam_image.empty()) {
 
@@ -348,6 +355,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             System.out.println(" --(!) No captured frame -- Break!");
 
         }
+        }
 
     }
 
@@ -406,10 +414,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             if (angleErrorX > 5 && angleErrorY > 5 && angleErrorX < -5 && angleErrorY < -5 && manualModeActive == false) {
                 
               storageBoxCoordinates.putError(angleErrorX, angleErrorY);
+              timeAtErrorPut = System.currentTimeMillis();
+              
 
             } 
             else{
-                if(launcherActive) {
+                if(shootToKill == 1) {
                         l.execute(Launcher.Command.FIRE);
                     }
             }
@@ -453,8 +463,10 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         byte x = e[1];
 
         // Add initial vales to HSV max settings
-        double[] m = new double[]{15, 245, 178};
+        double[] m = new double[]{3, 245, 178};
         hsv_max.set(m);
+        
+        timeAtErrorPut = System.currentTimeMillis() + 150;
 
         videoStreamActive = false;
 
