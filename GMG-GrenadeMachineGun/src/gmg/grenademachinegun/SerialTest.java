@@ -3,30 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package gmg.grenademachinegun;
+package javaapplication39;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
-import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.Scanner;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import java.util.Random;
 
-public class SerialTest implements SerialPortEventListener {
+/**
+ *
+ * @author Bakken
+ */
+public class SerialCom implements SerialPortEventListener {
     
-    
-   
-
-    SerialPort serialPort;
+     SerialPort serialPort;
     /**
      * The port we're normally going to use.
      */
@@ -34,7 +28,7 @@ public class SerialTest implements SerialPortEventListener {
         "/dev/tty.usbserial-A9007UX1", // Mac OS X
         "/dev/ttyACM0", // Raspberry Pi
         "/dev/ttyUSB0", // Linux
-        "COM7", // Windows
+        "COM3", // Windows
     };
 
     /**
@@ -54,11 +48,13 @@ public class SerialTest implements SerialPortEventListener {
      * Default bits per second for COM port.
      */
     private static final int DATA_RATE = 9600;
-
-    public void initialize() {
-                // the next line is for Raspberry Pi and 
-        // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
-        // System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
+    
+    boolean running = true;
+    
+    public void initialize(){
+     // the next line is for Raspberry Pi and 
+     // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
+     // System.setProperty("gnu.io.rxtx.SerialPorts", "/dev/ttyACM0");
 
         CommPortIdentifier portId = null;
         Enumeration portEnum = CommPortIdentifier.getPortIdentifiers();
@@ -77,7 +73,6 @@ public class SerialTest implements SerialPortEventListener {
             System.out.println("Could not find COM port.");
             return;
         }
-
         try {
             // open serial port, and use class name for the appName.
             serialPort = (SerialPort) portId.open(this.getClass().getName(),
@@ -88,49 +83,48 @@ public class SerialTest implements SerialPortEventListener {
                     SerialPort.DATABITS_8,
                     SerialPort.STOPBITS_1,
                     SerialPort.PARITY_NONE);
-            boolean p = true;
-             // open the streams
-            input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+            
             output = serialPort.getOutputStream();
-            Scanner scanner = new Scanner(System.in);
-            while (p = true) {
-
-                int data = scanner.nextInt();
-                output.write(data);
-                
-               // String data1 = scanner.next();
-                //output.write(data1.getBytes());
-                // System.out.println("");
-                 String inputLine = input.readLine();
-                System.out.println(inputLine);
-                
-                
+            
+            
+            Random r = new Random();
+            while(running){
+             
+             int i = r.nextInt(255);
+             output.write(i);
+             System.out.println(i);
+             Thread.sleep(1500);
             }
-            // add event listeners
+            
             serialPort.addEventListener(this);
             
             serialPort.notifyOnDataAvailable(true);
-
+            
+           
+            
+            
         } catch (Exception e) {
             System.err.println(e.toString());
         }
-    }
-
-    /**
+    } 
+   /**
      * This should be called when you stop using the port. This will prevent
      * port locking on platforms like Linux.
-     */
-    public synchronized void close() {
+     */ 
+   public synchronized void close() {
         if (serialPort != null) {
             serialPort.removeEventListener();
             serialPort.close();
         }
-    }
+    }  
+   
+  
 
-    /**
+   
+   /**
      * Handle an event on the serial port. Read the data and print it.
      */
-    public synchronized void serialEvent(SerialPortEvent oEvent) {
+   public synchronized void serialEvent(SerialPortEvent oEvent) {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
                 String inputLine = input.readLine();
@@ -139,8 +133,8 @@ public class SerialTest implements SerialPortEventListener {
                 System.err.println(e.toString());
             }
         }
-        // Ignore all the other eventTypes, but you should consider the other ones.
-    }
-
-
+    
+}
+   
+   
 }
