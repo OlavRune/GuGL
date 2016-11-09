@@ -40,6 +40,10 @@ public class GMGGrenadeMachineGun {
     StorageBoxSettings storageBoxSettings = new StorageBoxSettings();
     StorageBoxVideoStream storageBoxVideoStream = new StorageBoxVideoStream();
     
+       Runner r1 = new Runner();
+    
+        r1.start();
+        
   
     
     
@@ -108,6 +112,15 @@ public class GMGGrenadeMachineGun {
 
         */
     
+    
+ 
+
+
+
+
+    
+
+   
 
 
 }
