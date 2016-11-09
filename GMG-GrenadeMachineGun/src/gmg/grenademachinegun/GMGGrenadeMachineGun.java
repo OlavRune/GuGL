@@ -40,17 +40,18 @@ public class GMGGrenadeMachineGun {
     StorageBoxSettings storageBoxSettings = new StorageBoxSettings();
     StorageBoxVideoStream storageBoxVideoStream = new StorageBoxVideoStream();
     
-       Runner r1 = new Runner();
+
     
-        r1.start();
-        
   
     
     
     ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
     
+    Runner r = new Runner(semaphoreCoordinates, storageBoxCoordinates);
     
-    ArduinoSerial ArduinoSerial = new ArduinoSerial(storageBoxCoordinates, 1, semaphoreCoordinates);
+    r.start();
+    
+    //ArduinoSerial ArduinoSerial = new ArduinoSerial(storageBoxCoordinates, 1, semaphoreCoordinates);
     
     UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers,4000);
     
@@ -63,7 +64,7 @@ public class GMGGrenadeMachineGun {
     
     // Start consumer threads
     color.start();
-    ArduinoSerial.start();
+    //ArduinoSerial.start();
      
      
      

@@ -13,6 +13,9 @@ import java.io.BufferedReader;
 import java.io.OutputStream;
 import java.util.Enumeration;
 import java.util.Random;
+import java.util.concurrent.Semaphore;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,6 +24,17 @@ import java.util.Random;
 public class SerialCom implements SerialPortEventListener {
     
      SerialPort serialPort;
+    private final Semaphore semaphore;
+    private final StorageBoxCoordinates storagebox;
+     
+     
+     
+     public SerialCom(Semaphore semaphore, StorageBoxCoordinates storageBox){
+         
+         this.semaphore = semaphore;
+         this.storagebox = storageBox;
+         
+     }
     /**
      * The port we're normally going to use.
      */
@@ -89,11 +103,14 @@ public class SerialCom implements SerialPortEventListener {
             
             Random r = new Random();
             while(running){
-             
+             int sendValue = getValues();
+                
+               
              int i = r.nextInt(255);
-             output.write(i);
+             output.write(sendValue);
              System.out.println(i);
-             Thread.sleep(1500);
+                System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!");
+             Thread.sleep(20);
             }
             
             serialPort.addEventListener(this);
@@ -135,6 +152,37 @@ public class SerialCom implements SerialPortEventListener {
         }
     
 }
+
+
+    private int getValues() {
+       
+        int returnValue = 0;
+                     double[] d = new double[2];
+        
+         try {
+             semaphore.acquire();
+         } catch (InterruptedException ex) {
+             Logger.getLogger(SerialCom.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         
+         boolean available = storagebox.getAvailable();
+         
+         if(available){
+            
+             d = storagebox.getError();
+         }
+         
+         semaphore.release();
+         
+         int x = (int) d[0]/2;
+         int y = (int) d[1]/2;
+         
+         returnValue = x +(128-x) +  y;
+         
+         
+         return returnValue;
+         
+    }
    
    
 }

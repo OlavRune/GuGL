@@ -1,6 +1,7 @@
 package gmg.grenademachinegun;
 
 import gmg.grenademachinegun.SerialCom;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,12 +9,23 @@ import java.util.logging.Logger;
 
 
  class Runner extends Thread{
+
+    private final Semaphore semaphore;
+    private final StorageBoxCoordinates storageBox;
+     
+    
+     public Runner(Semaphore semaphore, StorageBoxCoordinates storageBox) {
+        this.sc = new SerialCom(semaphore,storageBox);
+         
+         this.semaphore = semaphore;
+         this.storageBox = storageBox;
+     }
     
   
    
    private boolean running = true;
    
-   SerialCom sc = new SerialCom();
+   SerialCom sc;
    
    
    public void run(){
