@@ -56,9 +56,9 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private double[] hsv_values;
 
     
-    private boolean launcherActive = false;
+    private boolean launcherActive = true;
     private boolean cameraFramActive = true; //Flag to activate cameraframe
-    private boolean hsvFrameActive = false; //flag to activate the hsvFrame
+    private boolean hsvFrameActive = true; //flag to activate the hsvFrame
     private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
     private boolean timerActive = false;
     private boolean videoStreamActive;
@@ -73,7 +73,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Mat distance;
     List<MatOfPoint> contours;
     
-    //private Launcher l;
+    private Launcher l;
 
     boolean b = true;
 
@@ -130,6 +130,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         counter = start;
 
         boolean stop = false;
+        l = new Launcher();
+        l.start();
 
         while (!stop) {
 
@@ -138,14 +140,15 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             }
 
             TryUpdateSettings();
-            /*
+            
             if(launcherActive){
                 
-                l = new Launcher();
-                l.start();
+                //l = new Launcher();       KELVIN TESTER
+                //l.start();
                 
                 if(fire == 1){
                     l.execute(Launcher.Command.FIRE);
+                    fire = 0;
                 }
                 if(shootToKill == 1){
                     l.execute(Launcher.Command.LEDON);
@@ -156,7 +159,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
                 }
                 
             }
-            */
+            
 
             try {
                 semaphoreCoordinates.acquire();
@@ -206,7 +209,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         }
 
-        capture = new VideoCapture(1);
+        capture = new VideoCapture(0);
         //capture.set(3,1920);
         // capture.set(4,1080);
         //capture.set(5,40);
@@ -406,13 +409,14 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             float angleErrorX = (pixErrorX / centerX) * cameraAngleX;
             float angleErrorY = (pixErrorY / centerY) * cameraAngleY;
             
-            /*
+            
             if(launcherActive){
             if(angleErrorX < 5 && angleErrorY < 5 && shootToKill == 1) {
                 l.execute(Launcher.Command.FIRE);
             }
             }
-            */
+            
+            
             
             Core.line(webcam_image, new Point(x, y), new Point(centerX, centerY), new Scalar(150, 150, 100)/*CV_BGR(100,10,10)*/, 3);
 
