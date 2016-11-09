@@ -45,14 +45,18 @@ public class GMGGrenadeMachineGun {
     
     ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
     
-
+    
     ArduinoSerial ArduinoSerial = new ArduinoSerial(storageBoxCoordinates, 1, semaphoreCoordinates);
     
-    UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers);
-    UDPsend send = new UDPsend(storageBoxVideoStream, numberOfPermits, semaphoreVideoStream);
+    UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers,4000);
+    
     recive.start();
+    
+    
+   
+   UDPsend send = new UDPsend(storageBoxVideoStream, numberOfPermits, semaphoreVideoStream, 5000, "192.6.6.6"); 
     send.start();
-
+    
     // Start consumer threads
     color.start();
     ArduinoSerial.start();

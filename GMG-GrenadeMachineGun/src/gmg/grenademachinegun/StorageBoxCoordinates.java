@@ -14,6 +14,8 @@ public class StorageBoxCoordinates {
   
   private float xError;
   private float yError;
+  
+  private double[] fireSettings;
  
 
   public boolean getAvailable() {
@@ -50,12 +52,22 @@ public class StorageBoxCoordinates {
      * 
      * @return getError as a double containing xError, Yerror
      */
-    public synchronized double[] getError(){
+    public  double[] getError(){
         
         if(available == true){
             available = false;                  
         }
         double[] e = new double[]{xError,yError};
         return e;
+    }
+    
+    public void putFireSettings(double[] settings){
+        
+        this.fireSettings = settings;
+    }
+    
+    public double[] getFireSettings(){
+        
+        return fireSettings;
     }
 }
