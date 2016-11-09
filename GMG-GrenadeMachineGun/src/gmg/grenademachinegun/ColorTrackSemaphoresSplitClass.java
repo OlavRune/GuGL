@@ -55,7 +55,6 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Mat circles;
     private double[] hsv_values;
 
-    
     private boolean launcherActive = true;
     private boolean cameraFramActive = true; //Flag to activate cameraframe
     private boolean hsvFrameActive = true; //flag to activate the hsvFrame
@@ -63,7 +62,6 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private boolean timerActive = false;
     private boolean videoStreamActive;
     private boolean manualModeActive;
-    
 
     private Scalar hsv_min;
     private Scalar hsv_max;
@@ -72,7 +70,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Mat array255;
     private Mat distance;
     List<MatOfPoint> contours;
-    
+
     private Launcher l;
 
     boolean b = true;
@@ -140,50 +138,43 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             }
 
             TryUpdateSettings();
-            
-            if(launcherActive){
-                
+
+            if (launcherActive) {
+
                 //l = new Launcher();       KELVIN TESTER
                 //l.start();
-                
-                if(fire == 1){
+                if (fire == 1) {
                     l.execute(Launcher.Command.FIRE);
                     fire = 0;
                 }
-                if(shootToKill == 1){
+                if (shootToKill == 1) {
                     l.execute(Launcher.Command.LEDON);
-                    
-                }
-                else {
+
+                } else {
                     l.execute(Launcher.Command.LEDOFF);
                 }
-                
+
             }
-            
 
             try {
                 semaphoreCoordinates.acquire();
-              
+
             } catch (InterruptedException e) {
             }
 
-            
             trackColors();
-            
+
             storageBoxCoordinates.put(counter);
-        
 
             semaphoreCoordinates.release();
 
             if (timerActive) {
                 stopTimer();
             }
-            
-            if(videoStreamActive){
+
+            if (videoStreamActive) {
                 streamVideo();
             }
-     
-          
 
         }
 
@@ -408,24 +399,24 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             //System.out.println("PixError: "+pixErrorX);
             float angleErrorX = (pixErrorX / centerX) * cameraAngleX;
             float angleErrorY = (pixErrorY / centerY) * cameraAngleY;
-            
-            
-            if(launcherActive){
-            if(angleErrorX < 5 && angleErrorY < 5 && shootToKill == 1) {
-                l.execute(Launcher.Command.FIRE);
+
+            boolean xErrorHigh = false;
+            boolean yErrorHigh = false;
+
+            if (angleErrorX > 5 && angleErrorY > 5 && angleErrorX < -5 && angleErrorY < -5 && manualModeActive == false) {
+                
+              storageBoxCoordinates.putError(angleErrorX, angleErrorY);
+
+            } 
+            else{
+                if(launcherActive) {
+                        l.execute(Launcher.Command.FIRE);
+                    }
             }
-            }
-            
-            
-            
+
             Core.line(webcam_image, new Point(x, y), new Point(centerX, centerY), new Scalar(150, 150, 100)/*CV_BGR(100,10,10)*/, 3);
 
-            // System.out.println("angleErrorX: "+angleErrorX);
-            // System.out.println("angleErrorY: "+angleErrorY);
-            //  System.out.println(counter);
-            if(manualModeActive == false){
-            storageBoxCoordinates.putError(angleErrorX, angleErrorY);
-            }
+        
         }
 
     }
@@ -464,59 +455,49 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         // Add initial vales to HSV max settings
         double[] m = new double[]{15, 245, 178};
         hsv_max.set(m);
-        
-        videoStreamActive = false;
 
+        videoStreamActive = false;
 
     }
 
     private void updateSettings() {
 
         newSettingsFromStorageBox = storageBoxSettings.getSettings();
-        
+
         String print = null;
-        for(int i = 1; i < 20; i++){
-            print = print + newSettingsFromStorageBox[i] + " " ;
-            
+        for (int i = 1; i < 20; i++) {
+            print = print + newSettingsFromStorageBox[i] + " ";
+
         }
         System.out.println(print);
-        
+
         double[] min = new double[]{newSettingsFromStorageBox[1], newSettingsFromStorageBox[3], newSettingsFromStorageBox[5]};
         hsv_min.set(min);
 
         double[] max = new double[]{newSettingsFromStorageBox[2], newSettingsFromStorageBox[4], newSettingsFromStorageBox[6]};
         hsv_max.set(max);
-        
-        
+
         //System.out.println("Value recived: " + newSettingsFromStorageBox[6]);
-        if((newSettingsFromStorageBox[7]) == 1){
+        if ((newSettingsFromStorageBox[7]) == 1) {
             videoStreamActive = true;
-        }
-        else
+        } else {
             videoStreamActive = false;
-        
-        if(newSettingsFromStorageBox[8]==1){
+        }
+
+        if (newSettingsFromStorageBox[8] == 1) {
             manualModeActive = true;
             updateManualMoveValues(true);
-        }
-        else{
+        } else {
             manualModeActive = false;
             updateManualMoveValues(false);
         }
-        
-         fire = (int) newSettingsFromStorageBox[14];
-         shootToKill = (int) newSettingsFromStorageBox[13];
+
+        fire = (int) newSettingsFromStorageBox[14];
+        shootToKill = (int) newSettingsFromStorageBox[13];
         //double[] fireSettings = new double[]{newSettingsFromStorageBox[13], newSettingsFromStorageBox[14]};
         //storageBoxCoordinates.putFireSettings(fireSettings);
-        
-        
-        
-        
-        //System.out.println("Value of videostreamActive from GUI: " +videoStreamActive);
-        
-        
-        
 
+        //System.out.println("Value of videostreamActive from GUI: " +videoStreamActive);
     }
 
     private void updatePanels() {
@@ -585,41 +566,35 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     }
 
     private void streamVideo() {
-        
-        
-          
-            if (semaphoreVideoStream.tryAcquire()) {
-                
-                VideoStreamBoxAvailable = storageBoxVideoStream.getAvailable();
-                if(VideoStreamBoxAvailable){
-                storageBoxVideoStream.put(webcam_image);
-                }
-                
-                semaphoreVideoStream.release();
 
+        if (semaphoreVideoStream.tryAcquire()) {
+
+            VideoStreamBoxAvailable = storageBoxVideoStream.getAvailable();
+            if (VideoStreamBoxAvailable) {
+                storageBoxVideoStream.put(webcam_image);
             }
+
+            semaphoreVideoStream.release();
+
+        }
     }
 
     private void updateManualMoveValues(boolean active) {
-       /*
+        /*
         calculating the manual movement from the gui.
         input: buttonvalues up,down,left,right
         output: X and Y coordinates
-        */
-        if(active){
+         */
+        if (active) {
             // (up value minus down value)
             // (right value minus left value)
-            float x = (float) (newSettingsFromStorageBox[12]-newSettingsFromStorageBox[11]);
-            float y = (float) (newSettingsFromStorageBox[9]-newSettingsFromStorageBox[10]);
-           
+            float x = (float) (newSettingsFromStorageBox[12] - newSettingsFromStorageBox[11]);
+            float y = (float) (newSettingsFromStorageBox[9] - newSettingsFromStorageBox[10]);
+
             storageBoxCoordinates.putError(x, y);
-        }
-        
-        else{
-           
+        } else {
+
         }
     }
-
-   
 
 }
