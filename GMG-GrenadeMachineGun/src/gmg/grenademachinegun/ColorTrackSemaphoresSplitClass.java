@@ -70,10 +70,8 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private Mat array255;
     private Mat distance;
     List<MatOfPoint> contours;
-    
+
     long timeAtErrorPut;
-    
-    
 
     private Launcher l;
 
@@ -265,44 +263,44 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
     private void trackColors() {
 
         long currentTime = System.currentTimeMillis();
-        
-        if(currentTime - timeAtErrorPut > 150) {
-        capture.read(webcam_image);
-        if (!webcam_image.empty()) {
 
-            //Adjusting brightness and contrast
-            // webcam_image.convertTo(webcam_image, -1, brightness, contrast);
-            //Adding blur to remove noise
-            //Imgproc.blur(webcam_image, webcam_image, new Size(7, 7));
-            // converting to HSV image
-            Imgproc.cvtColor(webcam_image, hsv_image, Imgproc.COLOR_BGR2HSV);
+        if (currentTime - timeAtErrorPut > 150) {
+            capture.read(webcam_image);
+            if (!webcam_image.empty()) {
 
-            //Checking if the hsv image is in range.
-            Core.inRange(hsv_image, hsv_min, hsv_max, thresholded);
-            //Core.inRange(hsv_image, hsv_minByte, hsv_maxByte, thresholded);
+                //Adjusting brightness and contrast
+                // webcam_image.convertTo(webcam_image, -1, brightness, contrast);
+                //Adding blur to remove noise
+                //Imgproc.blur(webcam_image, webcam_image, new Size(7, 7));
+                // converting to HSV image
+                Imgproc.cvtColor(webcam_image, hsv_image, Imgproc.COLOR_BGR2HSV);
 
-            Imgproc.erode(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
-            Imgproc.dilate(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
-            Core.split(hsv_image, lhsv); // We get 3 2D one channel Mats  
-            Mat S = lhsv.get(1);
-            Mat V = lhsv.get(2);
-            Core.subtract(array255, S, S);
-            Core.subtract(array255, V, V);
-            S.convertTo(S, CvType.CV_32F);
-            V.convertTo(V, CvType.CV_32F);
-            Core.magnitude(S, V, distance);
-            Core.inRange(distance, new Scalar(0.0), new Scalar(200.0), thresholded2);
+                //Checking if the hsv image is in range.
+                Core.inRange(hsv_image, hsv_min, hsv_max, thresholded);
+                //Core.inRange(hsv_image, hsv_minByte, hsv_maxByte, thresholded);
 
-            Imgproc.GaussianBlur(thresholded, thresholded, new Size(9, 9), 0, 0);
+                Imgproc.erode(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
+                Imgproc.dilate(thresholded, thresholded, Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(8, 8)));
+                Core.split(hsv_image, lhsv); // We get 3 2D one channel Mats  
+                Mat S = lhsv.get(1);
+                Mat V = lhsv.get(2);
+                Core.subtract(array255, S, S);
+                Core.subtract(array255, V, V);
+                S.convertTo(S, CvType.CV_32F);
+                V.convertTo(V, CvType.CV_32F);
+                Core.magnitude(S, V, distance);
+                Core.inRange(distance, new Scalar(0.0), new Scalar(200.0), thresholded2);
 
-            //List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-            Imgproc.HoughCircles(thresholded, circles, Imgproc.CV_HOUGH_GRADIENT, 2, thresholded.height() / 8, 200, 100, 0, 0);
-            Imgproc.findContours(thresholded, contours, thresholded2, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+                Imgproc.GaussianBlur(thresholded, thresholded, new Size(9, 9), 0, 0);
 
-            Imgproc.drawContours(webcam_image, contours, -1, new Scalar(255, 0, 0), 2);
-            //Imgproc.drawContours(webcam_image, contours2, -1, new Scalar(255, 0, 0), 2);
+                //List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+                Imgproc.HoughCircles(thresholded, circles, Imgproc.CV_HOUGH_GRADIENT, 2, thresholded.height() / 8, 200, 100, 0, 0);
+                Imgproc.findContours(thresholded, contours, thresholded2, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
 
-            /*
+                Imgproc.drawContours(webcam_image, contours, -1, new Scalar(255, 0, 0), 2);
+                //Imgproc.drawContours(webcam_image, contours2, -1, new Scalar(255, 0, 0), 2);
+
+                /*
             Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
             data = webcam_image.get(210, 210);
             Core.putText(webcam_image, String.format("(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
@@ -317,26 +315,26 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             int rows = circles.rows();
             int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a float)  
             float[] data2 = new float[rows * elemSize / 4];
-             */
-            getTargetError();
-            addInfoToImage();
+                 */
+                getTargetError();
+                addInfoToImage();
 
-            //Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
-            //Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
-            hsv_values = hsv_image.get(210, 210);
+                //Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
+                //Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
+                hsv_values = hsv_image.get(210, 210);
 
-            //Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-            //      , 1.0, new Scalar(50, 10, 10, 255), 3);
-            distance.convertTo(distance, CvType.CV_8UC1);
+                //Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
+                //      , 1.0, new Scalar(50, 10, 10, 255), 3);
+                distance.convertTo(distance, CvType.CV_8UC1);
 
-            // Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
-            //Core.circle(distance, new Point(210, 210), 10, new Scalar(100), 3);
-            //data = (double[]) distance.get(210, 210);
-            //getCoordinates(thresholded);
-            //Core.putText(distance, String.format("(" + String.valueOf(data[0]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-            //      , 1.0, new Scalar(100), 3);
-            updatePanels();
-            /*
+                // Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
+                //Core.circle(distance, new Point(210, 210), 10, new Scalar(100), 3);
+                //data = (double[]) distance.get(210, 210);
+                //getCoordinates(thresholded);
+                //Core.putText(distance, String.format("(" + String.valueOf(data[0]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
+                //      , 1.0, new Scalar(100), 3);
+                updatePanels();
+                /*
             cameraPanel.setimagewithMat(webcam_image);
 
             hsvPanel.setimagewithMat(hsv_image);  
@@ -349,12 +347,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             hsvFrame.repaint();
             // frame3.repaint();  
             thresholdFrame.repaint();
-             */
-        } else {
+                 */
+            } else {
 
-            System.out.println(" --(!) No captured frame -- Break!");
+                System.out.println(" --(!) No captured frame -- Break!");
 
-        }
+            }
         }
 
     }
@@ -412,21 +410,16 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             boolean yErrorHigh = false;
 
             if (angleErrorX > 5 && angleErrorY > 5 && angleErrorX < -5 && angleErrorY < -5 && manualModeActive == false) {
-                
-              storageBoxCoordinates.putError(angleErrorX, angleErrorY);
-              timeAtErrorPut = System.currentTimeMillis();
-              
 
-            } 
-            else{
-                if(shootToKill == 1) {
-                        l.execute(Launcher.Command.FIRE);
-                    }
+                storageBoxCoordinates.putError(angleErrorX, angleErrorY);
+                timeAtErrorPut = System.currentTimeMillis();
+
+            } else if (shootToKill == 1) {
+                l.execute(Launcher.Command.FIRE);
             }
 
             Core.line(webcam_image, new Point(x, y), new Point(centerX, centerY), new Scalar(150, 150, 100)/*CV_BGR(100,10,10)*/, 3);
 
-        
         }
 
     }
@@ -465,7 +458,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         // Add initial vales to HSV max settings
         double[] m = new double[]{3, 245, 178};
         hsv_max.set(m);
-        
+
         timeAtErrorPut = System.currentTimeMillis() + 150;
 
         videoStreamActive = false;
@@ -597,14 +590,12 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
         input: buttonvalues up,down,left,right
         output: X and Y coordinates
          */
+
         if (active) {
-            // (up value minus down value)
-            // (right value minus left value)
-            float x = (float) (newSettingsFromStorageBox[12] - newSettingsFromStorageBox[11]);
-            float y = (float) (newSettingsFromStorageBox[9] - newSettingsFromStorageBox[10]);
+            float x = (float) newSettingsFromStorageBox[15];
+            float y = (float) newSettingsFromStorageBox[16];
 
             storageBoxCoordinates.putError(x, y);
-        } else {
 
         }
     }
