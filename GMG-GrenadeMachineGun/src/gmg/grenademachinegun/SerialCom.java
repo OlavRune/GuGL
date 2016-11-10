@@ -31,6 +31,7 @@ public class SerialCom implements SerialPortEventListener {
     
     private byte servoXValue = 95;
     private byte servoYValue = 75;
+    
 
      
      
