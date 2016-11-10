@@ -29,9 +29,10 @@ import java.util.logging.Logger;
    
    
    public void run(){
-     
+        sc.initialize();
+        
        while (running){
-           sc.initialize();
+        
            
          
            try {

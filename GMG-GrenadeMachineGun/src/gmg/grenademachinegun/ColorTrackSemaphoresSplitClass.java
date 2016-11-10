@@ -6,19 +6,16 @@
 package gmg.grenademachinegun;
 
 import java.awt.AWTException;
-import java.awt.Graphics;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 //import java.awt.Panel;
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -27,7 +24,7 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
-import org.opencv.highgui.Highgui;
+
 import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
@@ -300,54 +297,18 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
                 Imgproc.drawContours(webcam_image, contours, -1, new Scalar(255, 0, 0), 2);
                 //Imgproc.drawContours(webcam_image, contours2, -1, new Scalar(255, 0, 0), 2);
 
-                /*
-            Core.circle(webcam_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
-            data = webcam_image.get(210, 210);
-            Core.putText(webcam_image, String.format("(" + String.valueOf(data[0]) + "," + String.valueOf(data[1]) + "," + String.valueOf(data[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-                    , 1.0, new Scalar(100, 10, 10, 255), 3);
-            
-            int thickness = 2;
-            int lineType = 8;
-            Point start = new Point(0, 0);
-            Point end = new Point(0, 0);
-            Scalar black = new Scalar(100, 10, 10);
-
-            int rows = circles.rows();
-            int elemSize = (int) circles.elemSize(); // Returns 12 (3 * 4bytes in a float)  
-            float[] data2 = new float[rows * elemSize / 4];
-                 */
+             
                 getTargetError();
                 addInfoToImage();
 
-                //Core.line(hsv_image, new Point(150, 50), new Point(202, 200), new Scalar(100, 10, 10)/*CV_BGR(100,10,10)*/, 3);
-                //Core.circle(hsv_image, new Point(210, 210), 10, new Scalar(100, 10, 10), 3);
+              
                 hsv_values = hsv_image.get(210, 210);
 
-                //Core.putText(hsv_image, String.format("x" + "(" + String.valueOf(hsv_values[0]) + "," + String.valueOf(hsv_values[1]) + "," + String.valueOf(hsv_values[2]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-                //      , 1.0, new Scalar(50, 10, 10, 255), 3);
                 distance.convertTo(distance, CvType.CV_8UC1);
 
-                // Core.line(distance, new Point(150, 50), new Point(202, 200), new Scalar(100)/*CV_BGR(100,10,10)*/, 3);
-                //Core.circle(distance, new Point(210, 210), 10, new Scalar(100), 3);
-                //data = (double[]) distance.get(210, 210);
-                //getCoordinates(thresholded);
-                //Core.putText(distance, String.format("(" + String.valueOf(data[0]) + ")"), new Point(30, 30), 3 //FONT_HERSHEY_SCRIPT_SIMPLEX  
-                //      , 1.0, new Scalar(100), 3);
+          
                 updatePanels();
-                /*
-            cameraPanel.setimagewithMat(webcam_image);
-
-            hsvPanel.setimagewithMat(hsv_image);  
-            //panel2.setimagewithMat(S);  
-            //distance.convertTo(distance, CvType.CV_8UC1);  
-            //panel3.setimagewithMat(distance);  
-            thresholdPanel.setimagewithMat(thresholded);
-
-            cameraFrame.repaint();
-            hsvFrame.repaint();
-            // frame3.repaint();  
-            thresholdFrame.repaint();
-                 */
+               
             } else {
 
                 System.out.println(" --(!) No captured frame -- Break!");
@@ -406,8 +367,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             float angleErrorX = (pixErrorX / centerX) * cameraAngleX;
             float angleErrorY = (pixErrorY / centerY) * cameraAngleY;
 
-            boolean xErrorHigh = false;
-            boolean yErrorHigh = false;
+          
 
             if (angleErrorX > 5 && angleErrorY > 5 && angleErrorX < -5 && angleErrorY < -5 && manualModeActive == false) {
 
