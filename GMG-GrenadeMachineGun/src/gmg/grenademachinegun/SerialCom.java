@@ -29,8 +29,10 @@ public class SerialCom implements SerialPortEventListener {
     private final Semaphore semaphore;
     private final StorageBoxCoordinates storagebox;
     
-    private byte servoXValue = 95;
-    private byte servoYValue = 75;
+    private double servoXValue = 95;
+    private double servoYValue = 75;
+    private double[] d;
+    private byte[] b;
     
 
      
@@ -178,11 +180,11 @@ public class SerialCom implements SerialPortEventListener {
 }
 
 
-    private byte[] getValues() {
+        private byte[] getValues() {
        
         
                 
-                     byte[] b = new byte[2];
+               //      byte[] b = new byte[2];
         
          try {
              semaphore.acquire();
@@ -195,30 +197,36 @@ public class SerialCom implements SerialPortEventListener {
          if(available){
             
              //d = storagebox.getErrorAsByte();
-             b = storagebox.getErrorAsByte();
+             d = storagebox.getError();
          }
          
          semaphore.release();
          
-         servoXValue = (byte) (servoXValue + b[0]);
-         servoYValue = (byte) (servoYValue + b[1]);
+
+         if(available) {
+         
+         servoXValue = d[0];
+         servoYValue =  d[1];
+         
          
          if(servoXValue < 0 || servoXValue > 180){
               System.out.println("out of reach in X");
+              servoXValue = 95;
          }
          
          if(servoYValue < 0 || servoYValue > 180){
              System.out.println("out of reach in Y");
+             servoYValue = 75;
          }
          
          
-         
-         b[0] = servoXValue;
-         b[1] = servoYValue;
-         
+         b[0] =(byte) servoXValue;
+         b[1] = (byte)servoYValue;
          
          
-         
+         }
+           
+                
          return b;
          
     }
