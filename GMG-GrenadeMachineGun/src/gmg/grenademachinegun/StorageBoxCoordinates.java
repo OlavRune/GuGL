@@ -59,7 +59,20 @@ public class StorageBoxCoordinates {
         }
         double[] e = new double[]{xError,yError};
         return e;
+        
+        
     }
+    
+     public  byte[] getErrorAsByte(){
+        
+        if(available == true){
+            available = false;                  
+        }
+        byte[] e;
+        e = new byte[]{(byte)xError,(byte)yError};
+        return e;
+        
+     }
     
     public void putFireSettings(double[] settings){
         

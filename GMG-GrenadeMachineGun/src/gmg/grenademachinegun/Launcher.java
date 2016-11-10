@@ -1,4 +1,4 @@
-/*
+
 package gmg.grenademachinegun;
 
 
@@ -9,7 +9,8 @@ import ch.ntb.usb.USBException;
 
 
 public class Launcher extends Thread{
-
+    short vid = 0x2123;
+    short pid = 0x1010;
     private Device dev = null;
     private final byte[][] COMMANDS = {{0x02, 0x20, 0x00,0x00,0x00,0x00,0x00,0x00},{0x03, 0x01, 0x00,0x00,0x00,0x00,0x00,0x00},{0x03, 0x00, 0x00,0x00,0x00,0x00,0x00,0x00},{0x02, 0x10, 0x00,0x00,0x00,0x00,0x00,0x00}};
     public enum Command {STOP,LEDON,LEDOFF,FIRE}
@@ -25,12 +26,13 @@ public class Launcher extends Thread{
 
     
     private void usbSetup(){ 
-        dev = USB.getDevice((short) 0x2123, (short) 0x1010); // Vendor ID, Product ID
+        dev = USB.getDevice((short)0x2123 , (short)0x1010); // Vendor ID, Product ID
         try {
             System.out.println("Trying to open device");
             dev.open(1, 0, -1); // Open the device (Configuration(default), Interface(Control), AlternativeConfig(None))
+            System.out.println("DEVICE CONNECTED!");
         } catch (USBException ex) {
-            System.out.println("Please check the driver for device VID:0x2123, PID:0x1010");
+            System.out.println("Please check the driver for device VID: " + (short)0x2123 + ", PID: " + (short)0x1010);
             ex.printStackTrace();
         }
         //zero();
@@ -68,4 +70,3 @@ public class Launcher extends Thread{
 
 }
 
-*/
