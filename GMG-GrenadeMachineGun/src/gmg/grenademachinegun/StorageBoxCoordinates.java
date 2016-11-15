@@ -34,7 +34,7 @@ public class StorageBoxCoordinates {
   public void put(int value) {
       
       contents = value; // store value
-      available = true; // now available for consumer
+      //available = true; // now available for consumer
   }
   
   
@@ -55,11 +55,20 @@ public class StorageBoxCoordinates {
     public  double[] getError(){
         
         if(available == true){
-            available = false;                  
+            available = false;    
+            
         }
         double[] e = new double[]{xError,yError};
         return e;
+        // FACK
         
+    }
+      public  double[] getErrorWithoutFlagChange(){
+        
+       
+        double[] e = new double[]{xError,yError};
+        return e;
+        // FACK
         
     }
     

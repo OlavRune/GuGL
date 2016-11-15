@@ -29,18 +29,18 @@ import java.util.logging.Logger;
    
    
    public void run(){
-        sc.initialize();
-        
-       while (running){
-        
+     sc.initialize();
+      
+       /*while (running){
+           
            
          
            try {
-               Thread.sleep(1000);
+               Thread.sleep(10);
            } catch (InterruptedException ex) {
                Logger.getLogger(Runner.class.getName()).log(Level.SEVERE, null, ex);
            }
-       }
+       }*/
        
    }
       
