@@ -166,7 +166,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
             trackColors();
 
-            storageBoxCoordinates.put(counter);
+          
 
             semaphoreCoordinates.release();
 
@@ -401,17 +401,17 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
             float pixErrorX = x - centerX;
             float pixErrorY = -y + centerY;
+       
+            float angleErrorX = (pixErrorX / centerX) * cameraAngleX/2;
+            float angleErrorY = (pixErrorY / centerY) * cameraAngleY/2;
+           //System.out.println("pixValue x: " + x +" PixError: "+pixErrorX + " angleX: " + angleErrorX);
+            //System.out.println("");
 
-            //System.out.println("PixError: "+pixErrorX);
-            float angleErrorX = (pixErrorX / centerX) * cameraAngleX;
-            float angleErrorY = (pixErrorY / centerY) * cameraAngleY;
-
-            boolean xErrorHigh = false;
-            boolean yErrorHigh = false;
-
-            if (angleErrorX > 5 && angleErrorY > 5 && angleErrorX < -5 && angleErrorY < -5 && manualModeActive == false) {
-
-                storageBoxCoordinates.putError(angleErrorX, angleErrorY);
+            //System.out.println("manualmodestatus: = " +  manualModeActive + "xError: " + angleErrorX + " yerror: " + angleErrorY);
+            if (((angleErrorX > 5 ||angleErrorX < -5) || (angleErrorY > 5 || angleErrorY < -5 ))&& manualModeActive == false) {
+                calculateAngleAndPutToStorageBox(angleErrorX,angleErrorY);
+                //storageBoxCoordinates.putError(angleErrorX, angleErrorY);
+                //System.out.println("put");
                 timeAtErrorPut = System.currentTimeMillis();
 
             } else if (shootToKill == 1) {
@@ -567,7 +567,7 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
 
         endTime = System.currentTimeMillis();
         long totTime = endTime - startTime;
-        System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
+       // System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
     }
 
     private void streamVideo() {
@@ -598,6 +598,16 @@ public class ColorTrackSemaphoresSplitClass extends Thread {
             storageBoxCoordinates.putError(x, y);
 
         }
+    }
+
+    private void calculateAngleAndPutToStorageBox(float x, float y) {
+       
+        double[] d = storageBoxCoordinates.getErrorWithoutFlagChange();
+        
+        float newX = (float) (d[0] + x);
+        float newY = (float) (d[1] + y);
+        storageBoxCoordinates.putError(newX, newY);
+        System.out.println("new angle from automatic mode: x: " + newX + " y: "+newY);
     }
 
 }

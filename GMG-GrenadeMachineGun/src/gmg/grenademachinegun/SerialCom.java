@@ -31,7 +31,7 @@ public class SerialCom implements SerialPortEventListener {
     
     private double servoXValue = 95;
     private double servoYValue = 75;
-    private double[] d;
+    private double[] d = {95,85};
     private byte[] b;
     
 
@@ -42,6 +42,8 @@ public class SerialCom implements SerialPortEventListener {
          
          this.semaphore = semaphore;
          this.storagebox = storageBox;
+         
+         b = new byte[2];
          
      }
     /**
@@ -73,7 +75,7 @@ public class SerialCom implements SerialPortEventListener {
      */
     private static final int DATA_RATE = 9600;
     
-    boolean running = true;
+    private boolean running = true;
     
     public void initialize(){
      // the next line is for Raspberry Pi and 
@@ -85,10 +87,12 @@ public class SerialCom implements SerialPortEventListener {
 
         //First, Find an instance of serial port as set in PORT_NAMES.
         while (portEnum.hasMoreElements()) {
+          
             CommPortIdentifier currPortId = (CommPortIdentifier) portEnum.nextElement();
             for (String portName : PORT_NAMES) {
                 if (currPortId.getName().equals(portName)) {
                     portId = currPortId;
+                    System.out.println("Port ID: " + portId.getName() + " OWNER: " + portId.getCurrentOwner());
                     break;
                 }
             }
@@ -111,25 +115,37 @@ public class SerialCom implements SerialPortEventListener {
             output = serialPort.getOutputStream();
             inputStream = serialPort.getInputStream();
             
-            
+        }catch(Exception e){
+            System.out.println("e.toString()");
+        }
+        
+        try{
             //Random r = new Random();
+            
             while(running){
                 long start = System.currentTimeMillis();
              byte[] sendValue = getValues();
-             byte[] inputByte = new byte[2];
-                
+            
+           
+                byte[] inputByte = new byte[]{1,1};
+               
                
              //int i = r.nextInt(255);
-           
+            if(sendValue != null){
              output.write(sendValue);
-             inputStream.read(inputByte);
+             //   System.out.println("PRINTER SEND: "+sendValue);
+            }
+            else{
+              //  System.out.println("sendvalue was null");
+            }
+             //inputStream.read(inputByte);
              if(sendValue == inputByte){
                  long stop = System.currentTimeMillis();
                  long timeTaken = start-stop;
                  System.out.println("Time from aquire to recive: " + timeTaken);
              }
              else
-                    System.out.println("not equal");
+                  //  System.out.println("not equal");
              
              
              
@@ -137,6 +153,8 @@ public class SerialCom implements SerialPortEventListener {
              //System.out.println(i);
                // System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!" + sendValue[0] + " " + sendValue[1]);
              Thread.sleep(20);
+             
+             
             }
             
             serialPort.addEventListener(this);
@@ -144,10 +162,12 @@ public class SerialCom implements SerialPortEventListener {
             serialPort.notifyOnDataAvailable(true);
             
            
-            
+           
             
         } catch (Exception e) {
-            System.err.println(e.toString());
+         
+            System.out.println("Exeption in serialcom: " +  e.toString());
+            
         }
     } 
    /**
@@ -181,9 +201,8 @@ public class SerialCom implements SerialPortEventListener {
 
 
         private byte[] getValues() {
-       
-        
-                
+      
+
                //      byte[] b = new byte[2];
         
          try {
@@ -200,31 +219,36 @@ public class SerialCom implements SerialPortEventListener {
              d = storagebox.getError();
          }
          
-         semaphore.release();
-         
 
          if(available) {
+         servoXValue = 180 -d[0];
+         servoYValue = 180 - d[1];
          
-         servoXValue = d[0];
-         servoYValue =  d[1];
+             //System.out.println(servoXValue);
          
          
          if(servoXValue < 0 || servoXValue > 180){
               System.out.println("out of reach in X");
               servoXValue = 95;
+              storagebox.putError(95, 75);
          }
          
          if(servoYValue < 0 || servoYValue > 180){
-             System.out.println("out of reach in Y");
+             System.out.println("out of reach in Y, value: " + servoYValue);
+             
              servoYValue = 75;
+                    storagebox.putError(95, 75);
+         }
          }
          
+         semaphore.release();
          
-         b[0] =(byte) servoXValue;
-         b[1] = (byte)servoYValue;
+        b[0] =(byte)servoXValue;
+        b[1] = (byte)servoYValue;
+         
+        //System.out.println("output b0: " + b[0] + " b1: " + b[1]);
          
          
-         }
            
                 
          return b;
