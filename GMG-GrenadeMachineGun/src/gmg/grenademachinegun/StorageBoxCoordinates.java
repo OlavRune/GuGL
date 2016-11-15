@@ -1,12 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package gmg.grenademachinegun;
 
 /**
  *
- * @author ib
+ * @author Olav Rune
  */
 public class StorageBoxCoordinates {
   private int contents;               // value to be stored
@@ -22,23 +19,15 @@ public class StorageBoxCoordinates {
     return available;
   }
   
-  public synchronized int get() {
-    if (available == true) {
-      // value not available, wait for producer
-      available = false;
-    }
-    return contents;
-  }
 
-  // reading value and resetting flag, wake up other threads (producer)
-  public void put(int value) {
-      
-      contents = value; // store value
-      //available = true; // now available for consumer
-  }
+
   
   
-  
+  /**
+   * Putting the x and y error
+   * @param x
+   * @param y 
+   */
     public void putError(float x, float y){
       
       xError = x;
@@ -63,6 +52,10 @@ public class StorageBoxCoordinates {
         // FACK
         
     }
+    /**
+     * Return the error as a double array containing x,y
+     * @return 
+     */
       public  double[] getErrorWithoutFlagChange(){
         
        
@@ -72,6 +65,10 @@ public class StorageBoxCoordinates {
         
     }
     
+     /**
+      * Return the error as a byte array
+      * @return 
+      */
      public  byte[] getErrorAsByte(){
         
         if(available == true){
@@ -83,11 +80,20 @@ public class StorageBoxCoordinates {
         
      }
     
+     /**
+      * Putting the fire setting
+      * @param settings 
+      */
     public void putFireSettings(double[] settings){
         
         this.fireSettings = settings;
     }
     
+    /**
+     * Returning the fire setting.
+     * 1 or 0
+     * @return 
+     */
     public double[] getFireSettings(){
         
         return fireSettings;

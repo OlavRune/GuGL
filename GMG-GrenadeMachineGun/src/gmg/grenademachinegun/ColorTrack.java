@@ -19,7 +19,10 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 /**
- *
+ * Why does Java programmers wear glasses?
+ * They can't see sharp. 8-)
+ * hohohohohohho
+ * 
  * @author Olav Rune, Head of programming
  */
 public class ColorTrack extends Thread {
