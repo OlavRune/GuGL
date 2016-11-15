@@ -14,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
-import java.util.Random;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Bakken
  */
-public class SerialCom implements SerialPortEventListener {
+public class SerialCom extends Thread implements SerialPortEventListener {
     
      SerialPort serialPort;
     private final Semaphore semaphore;
@@ -76,6 +75,11 @@ public class SerialCom implements SerialPortEventListener {
     private static final int DATA_RATE = 9600;
     
     private boolean running = true;
+    
+    public void run(){
+        
+        initialize();
+    }
     
     public void initialize(){
      // the next line is for Raspberry Pi and 

@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package gmg.grenademachinegun;
 
 import java.util.concurrent.Semaphore;
-import javax.swing.JFrame;
+
 
 
 /**
@@ -45,12 +40,13 @@ public class GMGGrenadeMachineGun {
   
     
     
-    ColorTrackSemaphoresSplitClass color = new ColorTrackSemaphoresSplitClass(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
+    ColorTrack color = new ColorTrack(storageBoxCoordinates, storageBoxSettings, storageBoxVideoStream, semaphoreCoordinates, semaphoreSettings, semaphoreVideoStream);
     
-    Runner r = new Runner(semaphoreCoordinates, storageBoxCoordinates);
+    //Runner r = new Runner(semaphoreCoordinates, storageBoxCoordinates);
+    //r.start();
     
-    r.start();
-    
+    SerialCom c = new SerialCom(semaphoreCoordinates, storageBoxCoordinates);
+    c.start();
     //ArduinoSerial ArduinoSerial = new ArduinoSerial(storageBoxCoordinates, 1, semaphoreCoordinates);
     
     UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers,4000);
