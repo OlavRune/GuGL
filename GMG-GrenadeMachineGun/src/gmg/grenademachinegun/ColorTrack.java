@@ -160,8 +160,7 @@ public class ColorTrack extends Thread {
             //track colors and get error values
             trackColors();
 
-            semaphoreCoordinates.release();
-
+            
             if (timerActive) {
                 stopTimer();
             }
@@ -371,9 +370,15 @@ public class ColorTrack extends Thread {
 
             // If the error exceeds a given value, then put the values in storagebox for correction
             if (((angleErrorX > 3 || angleErrorX < -3) || (angleErrorY > 3 || angleErrorY < -3)) && manualModeActive == false) {
-                if (angleErrorX > 8 || angleErrorX < -8) {
+                if (angleErrorX > 8 || angleErrorX < -8 ) {
                     // Adding a factor for a more smooth movement
                     angleErrorX = angleErrorX*0.4f;
+                 
+                }
+                if (angleErrorY > 8 || angleErrorY < -8 ) {
+                    // Adding a factor for a more smooth movement
+               
+                    angleErrorY = angleErrorY*0.4f;
                 }
                 calculateAngleAndPutToStorageBox(angleErrorX, angleErrorY);
             
@@ -614,6 +619,7 @@ public class ColorTrack extends Thread {
         float newX = (float) (d[0] + x);
         float newY = (float) (d[1] + y);
         storageBoxCoordinates.putError(newX, newY);
+        semaphoreCoordinates.release();
         System.out.println("error x: " + x + " error Y: " + y + " new angle x: " + newX + " y: " + newY);
     }
 
