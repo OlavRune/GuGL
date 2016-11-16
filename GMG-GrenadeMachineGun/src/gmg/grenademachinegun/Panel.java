@@ -12,7 +12,7 @@ import org.opencv.core.Mat;
 
 /**
  *
- * @author Olav Rune
+ * @author 14 år gammel Inder med ukjent navn
  */
     
 public class Panel extends JPanel{  
