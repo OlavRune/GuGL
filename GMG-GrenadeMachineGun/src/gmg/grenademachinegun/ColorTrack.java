@@ -601,6 +601,8 @@ public class ColorTrack extends Thread {
             float y = (float) newSettingsFromStorageBox[16];
 
             storageBoxCoordinates.putError(x, y);
+            
+            notifyAll();
 
         }
     }

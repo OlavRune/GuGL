@@ -138,7 +138,8 @@ public class SerialCom extends Thread implements SerialPortEventListener {
                 //System.out.println(i);
                 // System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!" + sendValue[0] + " " + sendValue[1]);
                 {
-                    Thread.sleep(20);
+                    //Thread.sleep(20);
+                    wait();
                 }
 
             }
