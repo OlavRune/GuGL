@@ -1,14 +1,9 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package gmg.grenademachinegun;
 
-import java.nio.ByteBuffer;
 
 /**
  *
- * @author ib
+ * @author Guess who
  */
 public class StorageBoxSettings {
 
@@ -16,37 +11,33 @@ public class StorageBoxSettings {
     private boolean available = false;  // flag
 
     private double[] setttings;
-    private byte[] hsvSettingsByte;
 
+
+    /**
+     * Return true if new values available
+     * @return 
+     */
     public boolean getAvailable() {
         return available;
     }
 
-    public int get() {
-        if (available == true) {
-            // value not available, wait for producer
-            available = false;
-        }
-        return contents;
-    }
-
-    // reading value and resetting flag, wake up other threads (producer)
-    public void put(int value) {
-        if (available == false) {
-            contents = value; // store value
-            available = true; // now available for consumer
-        }
-    }
-
-    public void putSettings(double[] hsvValues) {
-        if (available == false) {
-            this.setttings = hsvValues;
+ /**
+  * Putting new settings
+  * @param Setting 
+  */
+    public void putSettings(double[] Setting) {
+   
+            this.setttings = Setting;
 
             available = true;
-        }
+     
 
     }
 
+    /**
+     * Return settings
+     * @return 
+     */
     public double[] getSettings() {
         if (available == true) {
             available = false;

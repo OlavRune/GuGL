@@ -1,48 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-/*  ------ HOW TO DOUBLE[] TO BYTE[]
-Convert your doubles into a byte array using java.nio.ByteBuffer
-
-ByteBuffer bb = ByteBuffer.allocate(doubles.length * 8);
-for(double d : doubles) {
-   bb.putDouble(d);
-}
-get the byte array
-
-byte[] bytearray = bb.array();
-send it over the net and then convert it to double array on the receiving side
-
-ByteBuffer bb = ByteBuffer.wrap(bytearray);
-double[] doubles = new double(bytearray.length / 8);
-for(int i = 0; i < doubles.length; i++) {
-    doubles[i] = bb.getDouble();
-}
-*/
-
-
-
-
-
-
 
 package gmg.grenademachinegun;
 
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.Arrays;
+
 
 /**
  *
- * @author ib
+ * @author 
  */
 public class UDPrecive extends Thread {
 
@@ -72,13 +43,10 @@ public class UDPrecive extends Thread {
         datagram = new DatagramPacket(buf, buf.length);
         socket = new DatagramSocket(this.PORT);
 
-       // createGUI();
     }
 
     public void run() {
-        int value = 0;
-        int activeThreads = Thread.activeCount();  // init active thread counter
-
+    
         long startTime = 0;
         long endTime = 0;
 
@@ -107,25 +75,8 @@ public class UDPrecive extends Thread {
             
 
         }
-        /**
-         * while (!stop) { try { semaphore.acquire(); startTime =
-         * System.currentTimeMillis();
-         *
-         * }
-         * catch(InterruptedException e) { stop = true; } available =
-         * storageBox.getAvailable(); if (available) { value = storageBox.get();
-         * } semaphore.release(); endTime = System.currentTimeMillis(); long
-         * time = (endTime-startTime); // System.out.println("Time elapsed from
-         * consumer acquired to release " + time + "ms"); // normally
-         * non-critical operations will be ouside semaphore: if (available) {
-         * System.out.println("Consumer got: " + value); } // check if all
-         * producers have terminated if (Thread.activeCount() == activeThreads -
-         * numberOfProducerThreads) { stop = true; } try {
-         * Thread.sleep(sleepTime); // Consumer will slow down execution } catch
-         * (InterruptedException e) { } } System.out.println("Consumer #" +
-         * this.consumerID + " stopped...");
-         *
-         */
+       
+        
     }
 
     
