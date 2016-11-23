@@ -26,7 +26,7 @@ public class UDPrecive extends Thread {
     private long sleepTime;
 
     private final int PORT;
-    private static final int PARAMS = 20;
+    private static final int PARAMS = 25;
     private DatagramSocket socket;
     private DatagramPacket datagram;
 
@@ -51,7 +51,7 @@ public class UDPrecive extends Thread {
         long endTime = 0;
 
         while (!stop) {
-            byte[] b = new byte[20];
+            byte[] b = new byte[25];
             try {
                 b = receiveParam();
             } catch (IOException ex) {
