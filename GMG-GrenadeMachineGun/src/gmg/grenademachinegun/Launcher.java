@@ -12,12 +12,14 @@ public class Launcher extends Thread {
     short vid = 0x2123;
     short pid = 0x1010;
     private Device dev = null;
+
+    // Launcher commands according to protocol. Values to be sent over USB.
     private final byte[][] COMMANDS = {{0x02, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, {0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, {0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, {0x02, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}};
     private final LauncherCommands launcherCommands;
     private final Semaphore semaphoreLauncher;
 
     public enum Command {
-        STOP, LEDON, LEDOFF, FIRE
+        STOP, LEDON, LEDOFF, FIRE   // Written commands for easier user interface.
     }
 
     public Launcher(LauncherCommands launcherCommands, Semaphore semaphoreLauncher) {
@@ -39,20 +41,19 @@ public class Launcher extends Thread {
                 Logger.getLogger(Launcher.class.getName()).log(Level.SEVERE, null, ex);
             }
             boolean available = launcherCommands.getAvailable();
-           if(available){
-            command = launcherCommands.getCommand();
-           }
-           fire = launcherCommands.getFireCommand();
+            if (available) {
+                command = launcherCommands.getCommand();
+            }
+            fire = launcherCommands.getFireCommand();
             semaphoreLauncher.release();
-           
+
             execute(command);
-            if(fire){
+            if (fire) {
                 execute(3);
-                
+
             }
             command = 0;
-      
-            
+
             try {
                 Thread.sleep(50);
             } catch (InterruptedException ex) {
@@ -66,15 +67,16 @@ public class Launcher extends Thread {
         dev = USB.getDevice((short) 0x2123, (short) 0x1010); // Vendor ID, Product ID
         try {
             System.out.println("Trying to open device");
-            dev.open(1, 0, -1); // Open the device (Configuration(default), Interface(Control), AlternativeConfig(None))
+            dev.open(1, 0, -1); // Connect to device (Configuration(default), Interface(Control), AlternativeConfig(None))
             System.out.println("DEVICE CONNECTED!");
         } catch (USBException ex) {
-            System.out.println("Please check the driver for device VID: " + (short) 0x2123 + ", PID: " + (short) 0x1010);
+            System.out.println("Please check the driver for device VID: " + (short) 0x2123 + ", PID: " + (short) 0x1010); // Didn't work
             ex.printStackTrace();
         }
         //zero();
     }
 
+    // Primary function to use launcher. Example: launcher.execute(launcer.COMMANDS.FIRE);
     public void execute(int c) {
         long duration = 1;
         try {

@@ -7,7 +7,6 @@ package gmg.grenademachinegun;
 
 import gmg.grenademachinegun.LauncherBackup.Command;
 
-
 /**
  *
  * @author root
@@ -15,38 +14,35 @@ import gmg.grenademachinegun.LauncherBackup.Command;
 public class LauncherCommands {
 
     private int command;
-    
+
     boolean flag = false;
     boolean fireCommand = false;
-    
-    
-    
-    public void putCommands(int c){
-        
+
+    public void putCommands(int c) {
+
         this.command = c;
         flag = true;
     }
-    public void putFireCommands(boolean fire){
+
+    public void putFireCommands(boolean fire) {
         fireCommand = fire;
-        
+
     }
-    public boolean getFireCommand(){
+
+    public boolean getFireCommand() {
         return fireCommand;
     }
-    
-    public int getCommand(){
-        
-        
+
+    public int getCommand() {
+
         flag = false;
-        
-        
+
         return command;
-      
-        
+
     }
-    
-    public boolean getAvailable(){
+
+    public boolean getAvailable() {
         return flag;
     }
-    
+
 }

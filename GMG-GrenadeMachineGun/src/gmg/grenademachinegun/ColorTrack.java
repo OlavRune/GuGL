@@ -481,7 +481,7 @@ public class ColorTrack extends Thread {
     private void addInitialValues() {
 
         // Add initial values to HSV min settings
-        double[] d = new double[]{29, 112  , 86};
+        double[] d = new double[]{29, 112, 86};
         hsv_min.set(d);
 
         // Add initial vales to HSV max settings
@@ -496,7 +496,6 @@ public class ColorTrack extends Thread {
         highFactor = 0.44f;
         timeToPassLow = 34;
         timeToPassHigh = 79;
-        
 
     }
 
@@ -524,10 +523,10 @@ public class ColorTrack extends Thread {
         double[] max = new double[]{newSettingsFromStorageBox[2], newSettingsFromStorageBox[4], newSettingsFromStorageBox[6]};
         hsv_max.set(max);
 
-        window = (float) (newSettingsFromStorageBox[17]/10f);
+        window = (float) (newSettingsFromStorageBox[17] / 10f);
         highVal = (float) newSettingsFromStorageBox[18];
-        lowFactor = (float) (newSettingsFromStorageBox[19]/100f);
-        highFactor = (float) (newSettingsFromStorageBox[20]/100f);
+        lowFactor = (float) (newSettingsFromStorageBox[19] / 100f);
+        highFactor = (float) (newSettingsFromStorageBox[20] / 100f);
         timeToPassLow = (long) newSettingsFromStorageBox[21];
         timeToPassHigh = (long) newSettingsFromStorageBox[22];
 
