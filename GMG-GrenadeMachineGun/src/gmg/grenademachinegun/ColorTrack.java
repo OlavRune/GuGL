@@ -19,10 +19,9 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
 /**
- * Why does Java programmers wear glasses?
- * They can't see sharp. 8-)
+ * Why does Java programmers wear glasses? They can't see sharp. 8-)
  * hohohohohohho
- * 
+ *
  * @author Olav Rune, Head of programming
  */
 public class ColorTrack extends Thread {
@@ -46,9 +45,9 @@ public class ColorTrack extends Thread {
 
     private boolean launcherActive = true;
     private boolean cameraFramActive = true; //Flag to activate cameraframe
-    private boolean hsvFrameActive = true; //flag to activate the hsvFrame
+    private boolean hsvFrameActive = false; //flag to activate the hsvFrame
     private boolean thresholdFrameActive = false;   //flag to activate the hsvFrame 
-    private boolean timerActive = false;
+    private boolean timerActive = true;
     private boolean videoStreamActive;
     private boolean manualModeActive;
 
@@ -61,8 +60,6 @@ public class ColorTrack extends Thread {
     List<MatOfPoint> contours;
 
     long timeAtErrorPut;
-
-    private Launcher l;
 
     boolean b = true;
 
@@ -82,8 +79,18 @@ public class ColorTrack extends Thread {
     private double[] newSettingsFromStorageBox;
     private int fire;
     private int shootToKill;
+    private boolean hasSemaphore = false;
+    private final LauncherCommands launcherCommands;
+    private final Semaphore semaphoreLauncher;
+    private long timeToPass = 80;
+    private float window;
+    private float highVal;
+    private float lowFactor;
+    private float highFactor;
+    private long timeToPassHigh;
+    private long timeToPassLow;
 
-    public ColorTrack(StorageBoxCoordinates storageBoxCoordinates, StorageBoxSettings storageBoxSettings, StorageBoxVideoStream storageBoxVideoStream, Semaphore semaphoreCoordinates, Semaphore semaphoreSettings, Semaphore semaphoreVideoStream) {
+    public ColorTrack(StorageBoxCoordinates storageBoxCoordinates, StorageBoxSettings storageBoxSettings, StorageBoxVideoStream storageBoxVideoStream, Semaphore semaphoreCoordinates, Semaphore semaphoreSettings, Semaphore semaphoreVideoStream, LauncherCommands launcherCommands, Semaphore semaphoreLauncher) {
 
         this.storageBoxCoordinates = storageBoxCoordinates;
         this.storageBoxSettings = storageBoxSettings;
@@ -91,6 +98,8 @@ public class ColorTrack extends Thread {
         this.semaphoreCoordinates = semaphoreCoordinates;
         this.semaphoreSettings = semaphoreSettings;
         this.semaphoreVideoStream = semaphoreVideoStream;
+        this.semaphoreLauncher = semaphoreLauncher;
+        this.launcherCommands = launcherCommands;
 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
@@ -118,8 +127,8 @@ public class ColorTrack extends Thread {
         counter = start;
 
         boolean stop = false;
-        l = new Launcher();
-        l.start();
+        //l = new Launcher();
+        //l.start();
 
         while (!stop) {
 
@@ -131,36 +140,49 @@ public class ColorTrack extends Thread {
             TryUpdateSettings();
 
             if (launcherActive) {
+                semaphoreLauncher.tryAcquire();
+                if (!launcherCommands.getAvailable()) {
+
+                    // If autofire activated, turn on warning LED.
+                    // No warning shots will be given.
+                    if (shootToKill == 1) {
+                        //l.execute(LauncherBackup.Command.LEDON);
+                        launcherCommands.putCommands(1);
+
+                    } else {
+                        //l.execute(LauncherBackup.Command.LEDOFF);
+                        launcherCommands.putCommands(2);
+                    }
+                }
 
                 // If launcher is active and fire is choosed, then fire
                 if (fire == 1) {
-                    l.execute(Launcher.Command.FIRE);
-                    fire = 0;
-                }
+                    //l.execute(LauncherBackup.Command.FIRE);
 
-                // If autofire activated, turn on warning LED.
-                // No warning shots will be given.
-                if (shootToKill == 1) {
-                    l.execute(Launcher.Command.LEDON);
+                    launcherCommands.putFireCommands(true);
+                    fire = 0;
 
                 } else {
-                    l.execute(Launcher.Command.LEDOFF);
+                    launcherCommands.putFireCommands(false);
                 }
+
+                semaphoreLauncher.release();
 
             }
 
-            try {
-                // acquire semaphore for storeagebox
-                // Release after putting error values
-                semaphoreCoordinates.acquire();
+            if (!hasSemaphore) {
+                try {
+                    // acquire semaphore for storeagebox
+                    // Release after putting error values
+                    semaphoreCoordinates.acquire();
+                    hasSemaphore = true;
 
-            } catch (InterruptedException e) {
+                } catch (InterruptedException e) {
+                }
             }
 
             //track colors and get error values
             trackColors();
-
-            semaphoreCoordinates.release();
 
             if (timerActive) {
                 stopTimer();
@@ -268,7 +290,7 @@ public class ColorTrack extends Thread {
          * frame is processed. That way you don't read the same errorvalue
          * several times.
          */
-        if (currentTime - timeAtErrorPut > 800) {
+        if (currentTime - timeAtErrorPut > timeToPass) {
 
             if (!webcam_image.empty()) {
 
@@ -370,18 +392,47 @@ public class ColorTrack extends Thread {
             float angleErrorY = (pixErrorY / centerY) * cameraAngleY / 2;
 
             // If the error exceeds a given value, then put the values in storagebox for correction
-            if (((angleErrorX > 3 || angleErrorX < -3) || (angleErrorY > 3 || angleErrorY < -3)) && manualModeActive == false) {
-                if (angleErrorX > 8 || angleErrorX < -8) {
+            if (((angleErrorX > window || angleErrorX < -window) || (angleErrorY > window || angleErrorY < -window)) && manualModeActive == false) {
+                if (angleErrorX > highVal || angleErrorX < -highVal) {
                     // Adding a factor for a more smooth movement
-                    angleErrorX = angleErrorX*0.4f;
+                    angleErrorX = angleErrorX * highFactor;
+                    timeToPass = timeToPassHigh;
+
+                }
+                if (angleErrorY > highVal || angleErrorY < -highVal) {
+                    // Adding a factor for a more smooth movement
+
+                    angleErrorY = angleErrorY * highFactor;
+                    timeToPass = timeToPassHigh;
+                }
+
+                if ((angleErrorX > window && angleErrorX < highVal) || (angleErrorX < -highVal && angleErrorX > window)) {
+                    // Adding a factor for a more smooth movement
+                    angleErrorX = angleErrorX * lowFactor;
+                    timeToPass = timeToPassLow;
+
+                }
+                if ((angleErrorY > window && angleErrorY < highVal) || (angleErrorY < -highVal && angleErrorY > window)) {
+                    // Adding a factor for a more smooth movement
+
+                    angleErrorY = angleErrorY * lowFactor;
+                    timeToPass = timeToPassLow;
                 }
                 calculateAngleAndPutToStorageBox(angleErrorX, angleErrorY);
-            
+
                 timeAtErrorPut = System.currentTimeMillis();
 
             } else if (shootToKill == 1) {
                 // If shoot to kill activated, then fire
-                l.execute(Launcher.Command.FIRE);
+                //l.execute(LauncherBackup.Command.FIRE);
+                fire = 1;
+
+            }
+
+            boolean debug = true;
+            if (manualModeActive == true && debug) {
+                calculateAngleAndPrint(angleErrorX, angleErrorY);
+
             }
 
             Core.line(webcam_image, new Point(x, y), new Point(centerX, centerY), new Scalar(150, 150, 100)/*CV_BGR(100,10,10)*/, 3);
@@ -430,22 +481,26 @@ public class ColorTrack extends Thread {
     private void addInitialValues() {
 
         // Add initial values to HSV min settings
-        double[] d = new double[]{3, 144, 115};
+        double[] d = new double[]{29, 112, 86};
         hsv_min.set(d);
-        byte b = 255 - 128;
-        byte[] e = new byte[]{3, b, 115};
 
         // Add initial vales to HSV max settings
-        double[] m = new double[]{3, 245, 178};
+        double[] m = new double[]{45, 255, 255};
         hsv_max.set(m);
 
-        timeAtErrorPut = System.currentTimeMillis() + 150;
+        timeAtErrorPut = System.currentTimeMillis() - 800;
         videoStreamActive = false;
+        window = 2.4f;
+        highVal = 11;
+        lowFactor = 0.27f;
+        highFactor = 0.44f;
+        timeToPassLow = 34;
+        timeToPassHigh = 79;
 
     }
 
     /**
-     * Udate the settings from storagebox
+     * Update the settings from storagebox
      */
     private void updateSettings() {
 
@@ -454,7 +509,7 @@ public class ColorTrack extends Thread {
 
         // Printing the values retrived, for debugging only
         String print = null;
-        for (int i = 1; i < 20; i++) {
+        for (int i = 1; i < 25; i++) {
             print = print + newSettingsFromStorageBox[i] + " ";
 
         }
@@ -468,6 +523,14 @@ public class ColorTrack extends Thread {
         double[] max = new double[]{newSettingsFromStorageBox[2], newSettingsFromStorageBox[4], newSettingsFromStorageBox[6]};
         hsv_max.set(max);
 
+        window = (float) (newSettingsFromStorageBox[17] / 10f);
+        highVal = (float) newSettingsFromStorageBox[18];
+        lowFactor = (float) (newSettingsFromStorageBox[19] / 100f);
+        highFactor = (float) (newSettingsFromStorageBox[20] / 100f);
+        timeToPassLow = (long) newSettingsFromStorageBox[21];
+        timeToPassHigh = (long) newSettingsFromStorageBox[22];
+
+        System.out.println("window: " + window + " highVal: " + highVal + " lowFactor: " + lowFactor + " highFactor: " + highFactor + " timeLow: " + timeToPassLow + " timeHigh: " + timeToPassHigh);
         // Checking if videostream is activated
         if ((newSettingsFromStorageBox[7]) == 1) {
             videoStreamActive = true;
@@ -563,7 +626,7 @@ public class ColorTrack extends Thread {
 
         endTime = System.currentTimeMillis();
         long totTime = endTime - startTime;
-        // System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
+        System.out.println("Time elapsed from producer acquired to release " + totTime + "ms");
     }
 
     /**
@@ -594,8 +657,10 @@ public class ColorTrack extends Thread {
         if (active) {
             float x = (float) newSettingsFromStorageBox[15];
             float y = (float) newSettingsFromStorageBox[16];
-
+            //notifyAll();
             storageBoxCoordinates.putError(x, y);
+            semaphoreCoordinates.release();
+            hasSemaphore = false;
 
         }
     }
@@ -614,6 +679,18 @@ public class ColorTrack extends Thread {
         float newX = (float) (d[0] + x);
         float newY = (float) (d[1] + y);
         storageBoxCoordinates.putError(newX, newY);
+        semaphoreCoordinates.release();
+        hasSemaphore = false;
+        System.out.println("error x: " + x + " error Y: " + y + " new angle x: " + newX + " y: " + newY);
+    }
+
+    private void calculateAngleAndPrint(float x, float y) {
+
+        double[] d = storageBoxCoordinates.getErrorWithoutFlagChange();
+
+        float newX = (float) (d[0] + x);
+        float newY = (float) (d[1] + y);
+
         System.out.println("error x: " + x + " error Y: " + y + " new angle x: " + newX + " y: " + newY);
     }
 

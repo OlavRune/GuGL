@@ -1,6 +1,5 @@
 package gmg.grenademachinegun;
 
-
 /**
  *
  * @author Guess who
@@ -12,31 +11,32 @@ public class StorageBoxSettings {
 
     private double[] setttings;
 
-
     /**
      * Return true if new values available
-     * @return 
+     *
+     * @return
      */
     public boolean getAvailable() {
         return available;
     }
 
- /**
-  * Putting new settings
-  * @param Setting 
-  */
+    /**
+     * Putting new settings
+     *
+     * @param Setting
+     */
     public void putSettings(double[] Setting) {
-   
-            this.setttings = Setting;
 
-            available = true;
-     
+        this.setttings = Setting;
+
+        available = true;
 
     }
 
     /**
      * Return settings
-     * @return 
+     *
+     * @return
      */
     public double[] getSettings() {
         if (available == true) {
