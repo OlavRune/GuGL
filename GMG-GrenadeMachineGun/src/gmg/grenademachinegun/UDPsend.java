@@ -14,7 +14,8 @@ import javax.imageio.ImageIO;
 
 /**
  *
- * @author ib
+ * @author Olav Rune, Code
+ * @author Matias, Javadoc
  */
 public class UDPsend extends Thread {
 
@@ -43,6 +44,14 @@ public class UDPsend extends Thread {
     private static final byte[] VALUESTARTBYTE = VALUESTART.getBytes();
     private static final byte[] ENDBYTE = END.getBytes();
 
+    /**
+     * Constructor for UDPsend
+     * @param storageBox
+     * @param consumerID
+     * @param semaphore
+     * @param port
+     * @param ipAddr
+     */
     public UDPsend(StorageBoxVideoStream storageBox, int consumerID, Semaphore semaphore, int port, String ipAddr) {
         this.storageBox = storageBox;
         this.semaphore = semaphore;
@@ -64,6 +73,10 @@ public class UDPsend extends Thread {
 
     }
 
+    /**
+     * run() method, Overrides run() in Thread Class
+     */
+    @Override
     public void run() {
 
         long startTime = 0;
@@ -99,6 +112,11 @@ public class UDPsend extends Thread {
         System.out.println("Consumer #" + this.consumerID + " stopped...");
     }
 
+    /**
+     * SendParam() method, Sends a byte array to GUI 
+     * @param bytesToSend
+     * @return
+     */
     public boolean sendParam(byte[] bytesToSend) {
         boolean result = false;
         byte[] paramBytes = bytesToSend;
@@ -106,6 +124,11 @@ public class UDPsend extends Thread {
         return result;
     }
 
+    /**
+     * sendImage() method, sends image to GUI
+     * @param mat, 2 dimensional matrices
+     * @return 2 dimensional matrices
+     */
     public boolean sendImage(Mat mat) {
         boolean result = false;
         this.mat = mat;
@@ -130,6 +153,12 @@ public class UDPsend extends Thread {
         return send(outByte);
     }
 
+    /**
+     * Private method, javadoc is not needed for the consumer, but to ease the code for learning is added.
+     * send(), sends a boolean byte array 
+     * @param b
+     * @return
+     */
     private boolean send(byte[] b) {
         boolean result = false;
         DatagramPacket out = new DatagramPacket(b, b.length, HOST, PORT);
@@ -142,6 +171,12 @@ public class UDPsend extends Thread {
         return result;
     }
 
+    /**
+     * BufferedImage, matToBufferedImage() method
+     * makes a matrix from the matrices
+     * @param matrix
+     * @return
+     */
     public BufferedImage matToBufferedImage(Mat matrix) {
         int cols = matrix.cols();
         int rows = matrix.rows();

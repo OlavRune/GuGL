@@ -3,6 +3,7 @@ package gmg.grenademachinegun;
 /**
  *
  * @author Guess who
+ * @author Matias Javadoc
  */
 public class StorageBoxSettings {
 
@@ -14,7 +15,7 @@ public class StorageBoxSettings {
     /**
      * Return true if new values available
      *
-     * @return
+     * @return type bolean
      */
     public boolean getAvailable() {
         return available;
@@ -23,7 +24,7 @@ public class StorageBoxSettings {
     /**
      * Putting new settings
      *
-     * @param Setting
+     * @param Setting type double array
      */
     public void putSettings(double[] Setting) {
 
@@ -36,7 +37,7 @@ public class StorageBoxSettings {
     /**
      * Return settings
      *
-     * @return
+     * @return settings of type double array
      */
     public double[] getSettings() {
         if (available == true) {

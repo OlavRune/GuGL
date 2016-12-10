@@ -11,10 +11,11 @@ import java.net.SocketException;
 
 /**
  *
- * @author
+ * @author Olav Runde, Code
+ * @author Matias, Javadoc
  */
 public class UDPrecive extends Thread {
-
+//Variables...............................
     private StorageBoxSettings storageBox;
     private Semaphore semaphore;
     private int consumerID;
@@ -27,7 +28,18 @@ public class UDPrecive extends Thread {
     private static final int PARAMS = 25;
     private DatagramSocket socket;
     private DatagramPacket datagram;
-
+//........................................
+    
+    /**
+     * Constructor of the Class UDPrecive
+     * 
+     * @param storageBox
+     * @param consumerID
+     * @param semaphore
+     * @param numberOfProducers
+     * @param PORT
+     * @throws SocketException
+     */
     public UDPrecive(StorageBoxSettings storageBox, int consumerID, Semaphore semaphore,
             int numberOfProducers, int PORT) throws SocketException {
         this.storageBox = storageBox;
@@ -43,6 +55,10 @@ public class UDPrecive extends Thread {
 
     }
 
+    /**
+     * run() method, Overrides the run() method in the Thread Class
+     */
+    @Override
     public void run() {
 
         long startTime = 0;
@@ -71,12 +87,23 @@ public class UDPrecive extends Thread {
 
     }
 
+    /**
+     * recieveParam(), recieves a datagram 
+     * @return datagramData, byte array
+     * @throws IOException
+     */
     public byte[] receiveParam() throws IOException {
         socket.receive(datagram);
         byte[] datagramData = datagram.getData();
         return datagramData;
     }
 
+    /**
+     * Private method, does not require javadoc, but to ease learning it's added.
+     * Converts byte array to array of double
+     * @param b byte array
+     * @return d, array of type double
+     */
     private double[] byteToDouble(byte[] b) {
 
         double[] d = new double[b.length];

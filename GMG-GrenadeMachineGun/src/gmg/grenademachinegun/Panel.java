@@ -11,35 +11,49 @@ import javax.swing.JPanel;
 import org.opencv.core.Mat;
 
 /**
+ * Class Panel extends JPanel
  *
- * @author 14 år gammel Inder med ukjent navn
+ * @author 14 år gammel Inder med ukjent navn og Olav Rune
+ * @author ukjent og Matias, javadoc
  */
 public class Panel extends JPanel {
 
     private static final long serialVersionUID = 1L;
     private BufferedImage image;
-    // Create a constructor method  
 
+    /**
+     * Constructor of Panel
+     */
     public Panel() {
         super();
     }
 
+    /*
+    * Gets BufferedImage
+    * @return image
+     */
     private BufferedImage getimage() {
         return image;
     }
 
+    /*
+    * setimage(), sets image of type BufferedImage
+     */
     public void setimage(BufferedImage newimage) {
         image = newimage;
 
     }
 
+    /*
+     * setimagewithMat(), sets image of type matrice
+     */
     public void setimagewithMat(Mat newimage) {
         image = this.matToBufferedImage(newimage);
 
     }
 
     /**
-     * Converts/writes a Mat into a BufferedImage.
+     * matToBufferedImage(), Converts/writes a Mat into a BufferedImage.
      *
      * @param matrix Mat of type CV_8UC3 or CV_8UC1
      * @return BufferedImage of type TYPE_3BYTE_BGR or TYPE_BYTE_GRAY
@@ -73,6 +87,10 @@ public class Panel extends JPanel {
         return image2;
     }
 
+    /**
+     * paintCopmponent()
+     * @param g of type Graphics
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

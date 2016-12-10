@@ -2,7 +2,8 @@ package gmg.grenademachinegun;
 
 /**
  *
- * @author Olav Rune
+ * @author Olav Rune, code
+ * @author Matias, Javadoc
  */
 public class StorageBoxCoordinates {
 
@@ -19,8 +20,8 @@ public class StorageBoxCoordinates {
     }
 
     /**
-     * Putting the x and y error
-     *
+     * putError() method, puts error in x and y direction,
+     * where x is horizontal and y is vertical
      * @param x
      * @param y
      */
@@ -33,9 +34,10 @@ public class StorageBoxCoordinates {
 
     }
 
-    /**
-     *
-     * @return getError as a double containing xError, Yerror
+   /**
+     * getError() method of type double array with flag change
+     * @return e, double array containing error in x and y direction, 
+     * where x is horizontal and y is vertical
      */
     public double[] getError() {
 
@@ -49,10 +51,10 @@ public class StorageBoxCoordinates {
 
     }
 
-    /**
-     * Return the error as a double array containing x,y
-     *
-     * @return
+ /**
+     * getError() method of type double array without flag change
+     * @return e, double array containing error in x and y direction, 
+     * where x is horizontal and y is vertical
      */
     public double[] getErrorWithoutFlagChange() {
 
@@ -63,9 +65,9 @@ public class StorageBoxCoordinates {
     }
 
     /**
-     * Return the error as a byte array
-     *
-     * @return
+     * getErrorAsByte() method of type byte array with flag change
+     * @return e, double array containing error in x and y direction, 
+     * where x is horizontal and y is vertical
      */
     public byte[] getErrorAsByte() {
 
@@ -79,9 +81,9 @@ public class StorageBoxCoordinates {
     }
 
     /**
-     * Putting the fire setting
+     * putfireSettings() method, puts fire setting
      *
-     * @param settings
+     * @param settings, of type double array
      */
     public void putFireSettings(double[] settings) {
 
@@ -89,9 +91,8 @@ public class StorageBoxCoordinates {
     }
 
     /**
-     * Returning the fire setting. 1 or 0
-     *
-     * @return
+     * getFireSettings() method, gets the firesetting
+     * @return firesettings, as a double array of 1 or 0
      */
     public double[] getFireSettings() {
 

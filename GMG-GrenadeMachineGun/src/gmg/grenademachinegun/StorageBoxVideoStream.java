@@ -3,27 +3,26 @@ package gmg.grenademachinegun;
 import org.opencv.core.Mat;
 
 /**
- *
- * @author NummeNum
+ * StorageBoxVideoStream Class
+ * @author Olav Rune, code
+ * @author Matias, javadoc
  */
 public class StorageBoxVideoStream {
-
+//Variables.....................................................
     private Mat image;               // value to be stored
     private boolean available = false;  // flag
-
+//..............................................................
     /**
-     * Return true if a new image is available
-     *
-     * @return
+     * getAvailable(), boolan method. 
+     * @return, returns true if a new image is available
      */
     public boolean getAvailable() {
         return available;
     }
 
     /**
-     * Return image
-     *
-     * @return
+     * get() method, of type Mat
+     * @return, returns image matrice
      */
     public Mat get() {
         if (available == true) {
@@ -34,13 +33,13 @@ public class StorageBoxVideoStream {
     }
 
     /**
-     * put mat
+     * put() method, puts mat, matrice to stream to GUI
      *
      * @param imageToStream
      */
     public void put(Mat imageToStream) {
 
-        image = imageToStream; // store value
+        image = imageToStream; // stores value in new variable "image" of type Mat
         available = true; // now available for consumer
     }
 

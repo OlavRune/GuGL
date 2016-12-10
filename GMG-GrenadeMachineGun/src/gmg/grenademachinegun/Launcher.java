@@ -7,6 +7,11 @@ import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Class Launcer, extends Thread
+ * @author Olav Rune, James Green: http://coffeefueledcreations.com/blog/?p=131
+ * @author James Green, Matias, Javadoc
+ */
 public class Launcher extends Thread {
 
     short vid = 0x2123;
@@ -18,16 +23,28 @@ public class Launcher extends Thread {
     private final LauncherCommands launcherCommands;
     private final Semaphore semaphoreLauncher;
 
+    /**
+     * Enum commands for the Launcer class
+     * 
+     */
     public enum Command {
         STOP, LEDON, LEDOFF, FIRE   // Written commands for easier user interface.
     }
 
+    /**
+     * Constructor of the Launcher class
+     * @param launcherCommands LauncerCommands
+     * @param semaphoreLauncher SemaphoreLauncher
+     */
     public Launcher(LauncherCommands launcherCommands, Semaphore semaphoreLauncher) {
         this.launcherCommands = launcherCommands;
         this.semaphoreLauncher = semaphoreLauncher;
         usbSetup();
     }
 
+    /**
+     * run() method, overrides the run() method in Thread Class
+     */
     @Override
     public void run() {
         boolean stop = false;
@@ -63,6 +80,10 @@ public class Launcher extends Thread {
         }
     }
 
+    /**
+     * Javadoc for this method might not be needed, but can ease the learning process
+     * usbSetup() opens the Thunder Launcer
+     */
     private void usbSetup() {
         dev = USB.getDevice((short) 0x2123, (short) 0x1010); // Vendor ID, Product ID
         try {
@@ -76,7 +97,14 @@ public class Launcher extends Thread {
         //zero();
     }
 
-    // Primary function to use launcher. Example: launcher.execute(launcer.COMMANDS.FIRE);
+    
+
+    /**
+     * Primary function to use launcher. Example: launcher.execute(launcer.COMMANDS.FIRE);
+     * @param c use the public "Command" enum to control the turret
+     *
+     * The fire command takes about 3300 milliseconds
+     */
     public void execute(int c) {
         long duration = 1;
         try {

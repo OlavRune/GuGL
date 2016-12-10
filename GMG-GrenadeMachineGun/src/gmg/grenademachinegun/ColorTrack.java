@@ -22,7 +22,10 @@ import org.opencv.imgproc.Moments;
  * Why does Java programmers wear glasses? They can't see sharp. 8-)
  * hohohohohohho
  *
+ * This is the class where the logic of this project is handled.
+ * 
  * @author Olav Rune, Head of programming
+ * @author Olav Rune and Matias, Javadoc
  */
 public class ColorTrack extends Thread {
 
@@ -70,8 +73,9 @@ public class ColorTrack extends Thread {
     private Semaphore semaphoreCoordinates;
     private Semaphore semaphoreSettings;
     private Semaphore semaphoreVideoStream;
-    private boolean VideoStreamBoxAvailable;    //Flag to check if the Storagebox for videostream is available
-    private boolean newSettings;    //flag to check if there are new settings in StoreageboxSettings
+    
+    private boolean VideoStreamBoxAvailable;//..Flag to check if the Storagebox for videostream is available
+    private boolean newSettings;//..............Flag to check if there are new settings in StoreageboxSettings
 
     int counter = 0;
     private long startTime;
@@ -90,6 +94,17 @@ public class ColorTrack extends Thread {
     private long timeToPassHigh;
     private long timeToPassLow;
 
+    /**
+     * Constructor for the ColorTrack Class
+     * @param storageBoxCoordinates of type StorageBoxCoordinates
+     * @param storageBoxSettings of type StorageBoxSettings
+     * @param storageBoxVideoStream of type StorageBoxVideoStream
+     * @param semaphoreCoordinates of type SemaphoreCoordinates
+     * @param semaphoreSettings of type SemaphoreSettings
+     * @param semaphoreVideoStream of type SemaphoreVideoStream
+     * @param launcherCommands of type LauncherCommands
+     * @param semaphoreLauncher of type SemaphoreLauncher
+     */
     public ColorTrack(StorageBoxCoordinates storageBoxCoordinates, StorageBoxSettings storageBoxSettings, StorageBoxVideoStream storageBoxVideoStream, Semaphore semaphoreCoordinates, Semaphore semaphoreSettings, Semaphore semaphoreVideoStream, LauncherCommands launcherCommands, Semaphore semaphoreLauncher) {
 
         this.storageBoxCoordinates = storageBoxCoordinates;
@@ -116,6 +131,10 @@ public class ColorTrack extends Thread {
 
     }
 
+    /**
+     * run() overrides the Thread Class's run() method
+     */
+    @Override
     public void run() {
 
         int start = 1;
@@ -127,17 +146,14 @@ public class ColorTrack extends Thread {
         counter = start;
 
         boolean stop = false;
-        //l = new Launcher();
-        //l.start();
-
+    
         while (!stop) {
 
             if (timerActive) {
-                startTimer();
+                startTimer(); // Starts timer
             }
-
-            // Check if there are new settings from the GUI
-            TryUpdateSettings();
+            
+            TryUpdateSettings();// Check if there are new settings from the GUI
 
             if (launcherActive) {
                 semaphoreLauncher.tryAcquire();
@@ -155,7 +171,7 @@ public class ColorTrack extends Thread {
                     }
                 }
 
-                // If launcher is active and fire is choosed, then fire
+                // If launcher is active and fire is chosen, then fire
                 if (fire == 1) {
                     //l.execute(LauncherBackup.Command.FIRE);
 
@@ -172,7 +188,7 @@ public class ColorTrack extends Thread {
 
             if (!hasSemaphore) {
                 try {
-                    // acquire semaphore for storeagebox
+                    // acquire semaphore for storeageBox
                     // Release after putting error values
                     semaphoreCoordinates.acquire();
                     hasSemaphore = true;
@@ -181,8 +197,7 @@ public class ColorTrack extends Thread {
                 }
             }
 
-            //track colors and get error values
-            trackColors();
+            trackColors(); //track colors and get error values
 
             if (timerActive) {
                 stopTimer();
@@ -239,7 +254,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Create the HSV frame if choosen in setup
+     * createHsvFrame(), creates the HSV frame if choosen in setup
      */
     private void createHsvFrame() {
 
@@ -258,7 +273,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Creating the threshold frame if choosen in setup
+     * createThresholdFrame(), creates the threshold frame if choosen in setup
      */
     public void createThresholdFrame() {
 
@@ -361,7 +376,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * calculates the error value from the image and puts the value in
+     * Calculates the error value from the image and puts the value in
      * storagebox
      */
     private void getTargetError() {
@@ -371,7 +386,7 @@ public class ColorTrack extends Thread {
         contours.clear();
 
         if (x > 0) {
-
+            
             Core.circle(webcam_image, new Point(x, y), 4, new Scalar(50, 49, 0, 255), 4);
             float centerX = webcam_image.width() / 2;   // getting the centerpoint
             float centerY = webcam_image.height() / 2;
@@ -394,26 +409,26 @@ public class ColorTrack extends Thread {
             // If the error exceeds a given value, then put the values in storagebox for correction
             if (((angleErrorX > window || angleErrorX < -window) || (angleErrorY > window || angleErrorY < -window)) && manualModeActive == false) {
                 if (angleErrorX > highVal || angleErrorX < -highVal) {
-                    // Adding a factor for a more smooth movement
+                    // Adding a factor for a more smooth servo movement
                     angleErrorX = angleErrorX * highFactor;
                     timeToPass = timeToPassHigh;
 
                 }
                 if (angleErrorY > highVal || angleErrorY < -highVal) {
-                    // Adding a factor for a more smooth movement
+                    // Adding a factor for a more smooth servo movement
 
                     angleErrorY = angleErrorY * highFactor;
                     timeToPass = timeToPassHigh;
                 }
 
                 if ((angleErrorX > window && angleErrorX < highVal) || (angleErrorX < -highVal && angleErrorX > window)) {
-                    // Adding a factor for a more smooth movement
+                    // Adding a factor for a more smooth servo movement
                     angleErrorX = angleErrorX * lowFactor;
                     timeToPass = timeToPassLow;
 
                 }
                 if ((angleErrorY > window && angleErrorY < highVal) || (angleErrorY < -highVal && angleErrorY > window)) {
-                    // Adding a factor for a more smooth movement
+                    // Adding a factor for a more smooth servo movement
 
                     angleErrorY = angleErrorY * lowFactor;
                     timeToPass = timeToPassLow;
@@ -444,11 +459,16 @@ public class ColorTrack extends Thread {
     /**
      * calculates the x value
      *
-     * @param contours
+     * @param contours of Type List:MatOfPoints
      * @return
      */
     public int getXError(List<MatOfPoint> contours) {
-        List<Moments> mu = new ArrayList<Moments>(contours.size());
+       /* List<Moments> mu = new ArrayList<Moments>(contours.size());
+        *  Is the original code line
+        * but it's easier solved with the diamond operator(<>) offered by ArrayList
+        * shown below
+        */ 
+        List<Moments> mu = new ArrayList<>(contours.size());
         int x = 0;
         for (int i = 0; i < contours.size(); i++) {
             mu.add(i, Imgproc.moments(contours.get(i), false));
@@ -459,13 +479,14 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * calculates the Y value
+     * getYError(),  Calculates the vertical error value (Y-direction)
      *
-     * @param contours
-     * @return
+     * @param contours List
+     * @return y typecasted int value of the error
      */
     public int getYError(List<MatOfPoint> contours) {
-        List<Moments> mu = new ArrayList<Moments>(contours.size());
+        //List<Moments> mu = new ArrayList<Moments>(contours.size());
+        List<Moments> mu = new ArrayList<>(contours.size());
         int y = 0;
         for (int i = 0; i < contours.size(); i++) {
             mu.add(i, Imgproc.moments(contours.get(i), false));
@@ -476,7 +497,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Adding some initial start up values
+     * addInitialValues() adds initial start values
      */
     private void addInitialValues() {
 
@@ -500,7 +521,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Update the settings from storagebox
+     * updateSettings(), updates settings from storagebox
      */
     private void updateSettings() {
 
@@ -554,7 +575,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Updating the panels with a new image
+     * updatePanels(), updates the panels with a new image
      */
     private void updatePanels() {
 
@@ -574,7 +595,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Adding the RGB and HSV values to the images
+     * addInfoToImage() method, adds the RGB and HSV values to the images
      */
     private void addInfoToImage() {
 
@@ -596,7 +617,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Checking if there are new settings available. If yes, then retrieve the
+     * TryUpdateSettings(), Checks if there are new settings available. If yes, then retrieve the
      * new settings and apply them
      */
     private void TryUpdateSettings() {
@@ -611,7 +632,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Add a timestamp from the current time
+     *  startTimer() Add a timestamp from the current time
      */
     private void startTimer() {
 
@@ -619,7 +640,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Stop the timer and calculate the total time. Print the elapsed time if
+     * stopTimer() Stops the timer and calculate the total time. Print the elapsed time if
      * uncommented system.print
      */
     private void stopTimer() {
@@ -630,7 +651,7 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Put the current image to the storagebox for videostream
+     * streamVideo() Puts current image to the storagebox for videostream
      */
     private void streamVideo() {
 
@@ -647,10 +668,10 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Getting x and y values from storagebox settings and putting them in
+     * updateManualMoveValues() gets x and y values from storagebox settings and putting them in
      * storagebox for coordinates.
      *
-     * @param active
+     * @param active type Boolean
      */
     private void updateManualMoveValues(boolean active) {
 
@@ -666,11 +687,11 @@ public class ColorTrack extends Thread {
     }
 
     /**
-     * Calculating the new x and y angle by adding the error to the current
+     * calculateAngleAndPutToStorageBox() Calculates new x and y angle by adding the error to the current
      * angle.
      *
-     * @param x
-     * @param y
+     * @param x float
+     * @param y float
      */
     private void calculateAngleAndPutToStorageBox(float x, float y) {
 
@@ -684,6 +705,12 @@ public class ColorTrack extends Thread {
         System.out.println("error x: " + x + " error Y: " + y + " new angle x: " + newX + " y: " + newY);
     }
 
+    /**
+     * Javadoc not needed for private methods, but may ease the learning process
+     * Does not release semaphore.
+     * @param x float
+     * @param y float
+     */
     private void calculateAngleAndPrint(float x, float y) {
 
         double[] d = storageBoxCoordinates.getErrorWithoutFlagChange();

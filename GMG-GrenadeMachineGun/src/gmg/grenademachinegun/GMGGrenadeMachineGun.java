@@ -3,12 +3,16 @@ package gmg.grenademachinegun;
 import java.util.concurrent.Semaphore;
 
 /**
+ * Main Class of the project; GMGgrenageMachineGun
  *
  * @author Olav Rune, Såklart
+ * @author Olav Rune og Matias, Javadoc
  */
 public class GMGGrenadeMachineGun {
 
     /**
+     * Main method, Creating instances of Semaphores, storage boxes and staring threads
+     *
      * @param args the command line arguments
      * @throws java.lang.Exception
      */
@@ -42,11 +46,8 @@ public class GMGGrenadeMachineGun {
         c.start();
 
         UDPrecive recive = new UDPrecive(storageBoxSettings, 1, semaphoreSettings, numberOfProducers, 4000);
-        recive.start();
 
-        //UDPsend send = new UDPsend(storageBoxVideoStream, numberOfPermits, semaphoreVideoStream, 5000, "192.6.6.6");
-        //send.start();
-        // Starting the "Main" thread
+        recive.start();
         color.start();
 
     }

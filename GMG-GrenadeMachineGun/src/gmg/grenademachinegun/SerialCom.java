@@ -1,10 +1,13 @@
 package gmg.grenademachinegun;
 
 import gnu.io.CommPortIdentifier;
+import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 import gnu.io.SerialPortEventListener;
+import gnu.io.UnsupportedCommOperationException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
@@ -13,8 +16,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Class Serial Com Extends Thread, Implements SerialPortListener
  *
  * @author Bakken (hoho, right)
+ * @author Olav Rune, Kelvin, Matias, code
+ * @author Olav Rune og Matias Javadoc
  */
 public class SerialCom extends Thread implements SerialPortEventListener {
 
@@ -27,6 +33,12 @@ public class SerialCom extends Thread implements SerialPortEventListener {
     private double[] d = {95, 85};
     private byte[] b;
 
+    /**
+     * Constructor of class SerialCom
+     *
+     * @param semaphore of type Semaphore
+     * @param storageBox of type StorageBoxCoordinates
+     */
     public SerialCom(Semaphore semaphore, StorageBoxCoordinates storageBox) {
 
         this.semaphore = semaphore;
@@ -36,7 +48,7 @@ public class SerialCom extends Thread implements SerialPortEventListener {
 
     }
     /**
-     * The port we're normally going to use.
+     * The USB port we are normally going to use.
      */
     private static final String PORT_NAMES[] = {
         "/dev/tty.usbserial-A9007UX1", // Mac OS X
@@ -50,27 +62,38 @@ public class SerialCom extends Thread implements SerialPortEventListener {
      * bytes into characters making the displayed results codepage independent
      */
     private BufferedReader input;
+
     /**
      * The output stream to the port
      */
     private OutputStream output;
-    private InputStream inputStream;
+
+    private InputStream inputStream;//Currently not in use
+
     /**
      * Milliseconds to block while waiting for port open
      */
-    private static final int TIME_OUT = 2000;
+    private static final int TIME_OUT = 2000;//ms
+
     /**
      * Default bits per second for COM port.
      */
-    private static final int DATA_RATE = 9600;
+    private static final int DATA_RATE = 9600;//bps
 
     private boolean running = true;
 
+    /**
+     * run() method, Overrides method from Thread class
+     */
+    @Override
     public void run() {
 
         initialize();
     }
 
+    /**
+     * initialize(),
+     */
     public void initialize() {
         // the next line is for Raspberry Pi and 
         // gets us into the while loop and was suggested here was suggested http://www.raspberrypi.org/phpBB3/viewtopic.php?f=81&t=32186
@@ -109,7 +132,7 @@ public class SerialCom extends Thread implements SerialPortEventListener {
             output = serialPort.getOutputStream();
             inputStream = serialPort.getInputStream();
 
-        } catch (Exception e) {
+        } catch (PortInUseException | UnsupportedCommOperationException | IOException e) {
             System.out.println("e.toString()");
         }
 
@@ -138,7 +161,7 @@ public class SerialCom extends Thread implements SerialPortEventListener {
                 //System.out.println(i);
                 // System.out.println("Sendt to Arduino: " + sendValue + "   Going to sleep!" + sendValue[0] + " " + sendValue[1]);
                 {
-                    Thread.sleep(20);
+                    Thread.sleep(20); // .sleep burde kanskje vert byttet ut med wait og notify. Sleep kan skapåe trøbbel.
                     //wait();
                 }
 
@@ -156,7 +179,7 @@ public class SerialCom extends Thread implements SerialPortEventListener {
     }
 
     /**
-     * This should be called when you stop using the port. This will prevent
+     * close(), should be called when you stop using the port. This will prevent
      * port locking on platforms like Linux.
      */
     public synchronized void close() {
@@ -168,7 +191,10 @@ public class SerialCom extends Thread implements SerialPortEventListener {
 
     /**
      * Handle an event on the serial port. Read the data and print it.
+     *
+     * @param oEvent of type SerialPortEvent
      */
+    @Override
     public synchronized void serialEvent(SerialPortEvent oEvent) {
         if (oEvent.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             try {
@@ -181,9 +207,12 @@ public class SerialCom extends Thread implements SerialPortEventListener {
 
     }
 
+    /*
+     * getValues(), get error values to the target object as a byte array
+     */
     private byte[] getValues() {
 
-        //      byte[] b = new byte[2];
+       
         try {
             semaphore.acquire();
         } catch (InterruptedException ex) {
@@ -194,7 +223,7 @@ public class SerialCom extends Thread implements SerialPortEventListener {
 
         if (available) {
 
-            //d = storagebox.getErrorAsByte();
+          
             d = storagebox.getError();
         }
 
@@ -202,7 +231,7 @@ public class SerialCom extends Thread implements SerialPortEventListener {
             servoXValue = 180 - d[0];
             servoYValue = 180 - d[1];
 
-            //System.out.println(servoXValue);
+   
             if (servoXValue < 0 || servoXValue > 180) {
                 System.out.println("out of reach in X");
                 servoXValue = 95;
@@ -222,7 +251,6 @@ public class SerialCom extends Thread implements SerialPortEventListener {
         b[0] = (byte) servoXValue;
         b[1] = (byte) servoYValue;
 
-        //System.out.println("output b0: " + b[0] + " b1: " + b[1]);
         return b;
 
     }
