@@ -17,7 +17,7 @@ import org.opencv.core.Size;
 import org.opencv.highgui.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
-
+ 
 /**
  * Why does Java programmers wear glasses? They can't see sharp. 8-)
  * hohohohohohho
